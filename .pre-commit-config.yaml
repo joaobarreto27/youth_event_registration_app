@@ -1,0 +1,46 @@
+repos:
+  # 1️⃣ Hooks básicos
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v5.0.0
+    hooks:
+      - id: trailing-whitespace
+        args: [--markdown-linebreak-ext=md]
+      - id: end-of-file-fixer
+      - id: check-yaml
+        exclude: mkdocs.yml
+      - id: check-merge-conflict
+      - id: check-added-large-files
+        args: ['--maxkb=3000']
+
+  # 2️⃣ Mypy (agnóstico ao ambiente)
+  - repo: local
+    hooks:
+      - id: mypy
+        name: mypy (system env)
+        entry: mypy
+        language: system
+        types: [python]
+
+  # 3️⃣ Ruff (lint)
+  - repo: https://github.com/charliermarsh/ruff-pre-commit
+    rev: v0.6.5
+    hooks:
+      - id: ruff
+      - id: ruff-format
+
+  # 4️⃣ Segurança
+  - repo: https://github.com/PyCQA/bandit
+    rev: 1.7.10
+    hooks:
+      - id: bandit
+        args: [--recursive, --exclude=tests/, --skip=B101]
+
+  # 5️⃣ Commit message
+  - repo: https://github.com/jorisroovers/gitlint
+    rev: v0.18.0
+    hooks:
+      - id: gitlint
+        stages: [commit-msg]
+
+fail_fast: false
+default_stages: [pre-commit]
