@@ -62,7 +62,7 @@ def criar_evento(nome_evento: str, nome_criador: str):
         # Registra criador como participante
         session.execute(
             text("""
-                INSERT INTO participants (event_id, participant_name)
+                INSERT INTO event_participants (event_id, participant_name)
                 VALUES (:event_id, :nome)
             """),
             {"event_id": event_id, "nome": nome_criador},
@@ -90,7 +90,7 @@ def registrar_participante(event_id: int, nome: str) -> bool:
     try:
         session.execute(
             text("""
-                INSERT INTO participants (event_id, participant_name)
+                INSERT INTO event_participants (event_id, participant_name)
                 VALUES (:event_id, :nome)
             """),
             {"event_id": event_id, "nome": nome},
