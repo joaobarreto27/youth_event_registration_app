@@ -33,7 +33,7 @@ def listar_eventos_registrados():
 def listar_participantes_unicos():
     query = """
     SELECT DISTINCT participant_name
-    FROM participants
+    FROM event_participants
     ORDER BY participant_name
     """
     df = conn.query(query)
