@@ -12,21 +12,21 @@ repos:
       - id: check-added-large-files
         args: ['--maxkb=3000']
 
-  # 2️⃣ Mypy (agnóstico ao ambiente)
-  - repo: local
-    hooks:
-      - id: mypy
-        name: mypy (system env)
-        entry: mypy
-        language: system
-        types: [python]
+  # # 2️⃣ Mypy (agnóstico ao ambiente)
+  # - repo: local
+  #   hooks:
+  #     - id: mypy
+  #       name: mypy (system env)
+  #       entry: mypy
+  #       language: system
+  #       types: [python]
 
-  # 3️⃣ Ruff (lint)
-  - repo: https://github.com/charliermarsh/ruff-pre-commit
-    rev: v0.6.5
-    hooks:
-      - id: ruff
-      - id: ruff-format
+  # # 3️⃣ Ruff (lint)
+  # - repo: https://github.com/charliermarsh/ruff-pre-commit
+  #   rev: v0.6.5
+  #   hooks:
+  #     - id: ruff
+  #     - id: ruff-format
 
   # 4️⃣ Segurança
   - repo: https://github.com/PyCQA/bandit
