@@ -3,7 +3,7 @@ name = "youth-event-registration-app"
 version = "0.1.0"
 description = ""
 authors = [
-    {name = "joaobarreto27",email = "joao.vito1951@gmail.com"}
+    {name = "joaobarreto27", email = "joao.vito1951@gmail.com"}
 ]
 readme = "README.md"
 requires-python = ">=3.12"
@@ -33,5 +33,5 @@ where = ["src"]
 include = ["backend*", "frontend*"]
 
 [build-system]
-requires = ["poetry-core>=2.0.0,<3.0.0"]
-build-backend = "poetry.core.masonry.api"
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
