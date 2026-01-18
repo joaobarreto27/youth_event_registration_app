@@ -63,7 +63,7 @@ async def create_event(
         raise HTTPException(
             status_code=status.HTTP_409_CONFLICT,
             detail=(
-                f"❌ Já existe uma ideia com esse nome {event.event_name}, vote na sessão ao lado **(🗳️ Votar em Ideias de Eventos)**."
+                f"❌ Já existe uma ideia com esse nome {event.event_name}, vote na sessão abaixo **(🗳️ Votar em Ideias de Eventos)**."
             ),
         )
 
