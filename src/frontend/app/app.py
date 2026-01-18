@@ -11,48 +11,69 @@ st.set_page_config(
     page_title="Registro de Ideia de Eventos", page_icon="🎯", layout="wide"
 )
 
-# 2. CSS para alinhamento vertical e uso de espaço
+# 2. CSS Responsivo (Ajusta para Celular e PC)
 st.markdown(
     """
     <style>
-    /* Centraliza verticalmente o logo e o título */
     [data-testid="column"] {
         display: flex;
         align-items: center;
         justify-content: flex-start;
+        flex-direction: row !important; /* Impede o empilhamento no celular */
     }
-    /* Faz o título ocupar o espaço total da coluna e não quebrar linha cedo */
+
+    /* Container do Título */
     .main-title {
-        font-size: 2.5rem !important;
         font-weight: 700;
-        margin-left: -20px; /* Aproxima um pouco o texto do logo */
-        white-space: nowrap;
+        margin-left: 10px;
+        line-height: 1.2;
     }
-    /* Remove espaços em branco excessivos no topo */
+    @media (min-width: 768px) {
+        .main-title {
+            font-size: 2.5rem !important;
+        }
+        .logo-img {
+            width: 200px !important;
+        }
+    }
+    @media (max-width: 767px) {
+        .main-title {
+            font-size: 1.2rem !important;
+            margin-left: 5px;
+        }
+        .logo-img {
+            width: 80px !important; /* Logo menor no celular para caber tudo */
+        }
+        [data-testid="column"] {
+            gap: 10px;
+        }
+    }
+
+    /* Remove espaços excessivos no topo */
     .block-container {
-        padding-top: 2rem;
+        padding-top: 1rem;
     }
     </style>
     """,
     unsafe_allow_html=True,
 )
 
-# 3. Cabeçalho Largo
-# Aumentamos a proporção da primeira coluna para comportar um logo maior
-col_logo, col_titulo = st.columns([1.5, 8])
+# 3. Cabeçalho com proporção ajustada
+# Usamos colunas menores para o logo para garantir que o título tenha espaço lateral
+col_logo, col_titulo = st.columns([1, 4])
 
 with col_logo:
     current_dir = os.path.dirname(__file__)
     logo_path = os.path.join(current_dir, "logo.png")
 
     if os.path.exists(logo_path):
-        # Aumentamos para 250 para ocupar bem o espaço lateral
-        st.image(logo_path, width=250)
+        # Usamos apenas o st.image.
+        # O CSS que colocamos no topo (logo-img) cuidará do tamanho.
+        st.image(logo_path, width=200)
     else:
         st.error("Logo não encontrado")
 
 with col_titulo:
-    # Usamos st.markdown com uma classe CSS para maior controle de tamanho
     st.markdown(
         '<h1 class="main-title">🎯 Formulário de Ideia de Eventos Jovens AduPno</h1>',
         unsafe_allow_html=True,
