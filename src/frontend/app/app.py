@@ -9,6 +9,18 @@ st.set_page_config(
     page_title="Registro de Ideia de Eventos", page_icon="🎯", layout="wide"
 )
 
+# ==================== CABEÇALHO COM LOGO ====================
+# Ajuste as proporções [1, 10] para mudar o espaço do logo em relação ao título
+col_logo, col_titulo = st.columns([1, 8])
+
+with col_logo:
+    # Substitua pelo link da sua imagem ou caminho do arquivo local
+    # use_container_width garante que ela caiba na coluninha
+    st.image("https://seu-link-da-logo.com/logo.png", width=80)
+
+with col_titulo:
+    st.title("🎯 Formulário de Ideia de Eventos Jovens AduPno")
+
 # ==================== CONEXÃO COM O BANCO ====================
 conn = st.connection("my_postgres", type="sql")
 
