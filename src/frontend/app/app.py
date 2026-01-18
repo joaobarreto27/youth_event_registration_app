@@ -6,12 +6,33 @@ from sqlalchemy import text
 from sqlalchemy.exc import IntegrityError
 
 # ==================== CABEÇALHO COM LOGO ====================
+
+st.markdown(
+    """
+    <style>
+    /* Alinha verticalmente as colunas do cabeçalho */
+    header_style { } /* Apenas um marcador de comentário */
+    [data-testid="column"] {
+        display: flex;
+        align-items: center;
+        justify-content: flex-start;
+    }
+    /* Ajuste opcional: remove a margem extra que o st.title cria no topo */
+    h1 {
+        margin-top: 0rem;
+        padding-top: 0rem;
+    }
+    </style>
+    """,
+    unsafe_allow_html=True,
+)
+
 col_logo, col_titulo = st.columns([1, 8])
 
 with col_logo:
     current_dir = os.path.dirname(__file__)
     logo_path = os.path.join(current_dir, "logo.png")
-    st.image(logo_path, width=100)
+    st.image(logo_path, width=150)
 
 with col_titulo:
     st.title("🎯 Formulário de Ideia de Eventos Jovens AduPno")
