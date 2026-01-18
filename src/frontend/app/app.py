@@ -1,5 +1,5 @@
 import time
-from psycopg2 import IntegrityError
+from sqlalchemy.exc import IntegrityError
 from sqlalchemy import text
 import streamlit as st
 import pandas as pd
@@ -184,7 +184,7 @@ if st.button("✅ Confirmar Voto", width="stretch"):
     else:
         votos_com_sucesso = []
         votos_duplicados = []
-        erros = []
+        erros_tecnicos = []
 
         for ev_nome in eventos_selecionados:
             status = registrar_participante(eventos_map[ev_nome], nome_votante)
@@ -192,27 +192,30 @@ if st.button("✅ Confirmar Voto", width="stretch"):
                 votos_com_sucesso.append(ev_nome)
             elif status == "duplicado":
                 votos_duplicados.append(ev_nome)
-                lista_formatada = ", ".join(votos_duplicados)
             else:
-                erros.append(f"{ev_nome} ({status})")
+                erros_tecnicos.append(f"{ev_nome} ({status})")
 
-        if erros:
-            lista_formatada = ", ".join(votos_duplicados)
+        if votos_duplicados:
+            lista_dup = ", ".join(votos_duplicados)
             st.warning(
-                f"⚠️ **{nome_votante}**, você já tinha votado em alguma destas opções, esses votos não foram repetidos."
+                f"⚠️ **{nome_votante}**, você já tinha votado em: **{lista_dup}**. Esses votos não foram repetidos."
             )
 
+        for erro in erros_tecnicos:
+            st.error(f"❌ Erro técnico: {erro}")
+
         if votos_com_sucesso:
-            lista_sucesso = ", ".join(votos_com_sucesso)
+            lista_suc = ", ".join(votos_com_sucesso)
             st.success(
-                f"✅ **{nome_votante}** novo(s) voto(s) registrado(s) com sucesso!"
+                f"✅ **{nome_votante}**, novo(s) voto(s) registrado(s) para: **{lista_suc}**!"
             )
             st.cache_data.clear()
             time.sleep(5.0)
+            st.rerun()
 
         elif votos_duplicados:
             st.info(
-                "💡 Como você já votou nessas ideias, que tal propor uma nova abaixo?"
+                "💡 Como você já votou nessas ideias, que tal propor uma nova acima?"
             )
 
 # -------------------- TABELA DE PARTICIPANTES --------------------
