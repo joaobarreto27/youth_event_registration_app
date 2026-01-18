@@ -53,7 +53,7 @@ def criar_evento(nome_evento: str, nome_criador: str):
         # Registra na registered_events
         session.execute(
             text("""
-                INSERT INTO registered_events (id_event, event_name, created_by, created_at)
+                INSERT INTO registered_events (id_event, event_name, created_by, created_date)
                 VALUES (:id_event, :nome, :criador, CURRENT_TIMESTAMP)
             """),
             {"id_event": id_event, "nome": nome_evento, "criador": nome_criador},
