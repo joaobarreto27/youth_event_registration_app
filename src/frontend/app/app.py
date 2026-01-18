@@ -45,31 +45,31 @@ def criar_evento(nome_evento: str, nome_criador: str):
     try:
         # Cria o evento (assume tabela 'events' com UNIQUE em event_name)
         result = session.execute(
-            text("INSERT INTO events (event_name) VALUES (:nome) RETURNING id"),
+            text("INSERT INTO events (event_name) VALUES (:nome) RETURNING id_event"),
             {"nome": nome_evento},
         )
-        event_id = result.fetchone()[0]
+        id_event = result.fetchone()[0]
 
         # Registra na registered_events
         session.execute(
             text("""
-                INSERT INTO registered_events (event_id, event_name, created_by, created_at)
-                VALUES (:event_id, :nome, :criador, CURRENT_TIMESTAMP)
+                INSERT INTO registered_events (id_event, event_name, created_by, created_at)
+                VALUES (:id_event, :nome, :criador, CURRENT_TIMESTAMP)
             """),
-            {"event_id": event_id, "nome": nome_evento, "criador": nome_criador},
+            {"id_event": id_event, "nome": nome_evento, "criador": nome_criador},
         )
 
         # Registra criador como participante
         session.execute(
             text("""
-                INSERT INTO event_participants (event_id, participant_name)
-                VALUES (:event_id, :nome)
+                INSERT INTO event_participants (id_event, participant_name)
+                VALUES (:id_event, :nome)
             """),
-            {"event_id": event_id, "nome": nome_criador},
+            {"id_event": id_event, "nome": nome_criador},
         )
 
         session.commit()
-        return True, event_id
+        return True, id_event
     except IntegrityError:
         session.rollback()
         # Já existe → pega o ID existente
@@ -77,23 +77,23 @@ def criar_evento(nome_evento: str, nome_criador: str):
             text("SELECT id FROM events WHERE event_name = :nome"),
             {"nome": nome_evento},
         )
-        event_id = result.fetchone()[0]
-        return False, event_id  # False indica "já existia"
+        id_event = result.fetchone()[0]
+        return False, id_event  # False indica "já existia"
     except Exception as e:
         session.rollback()
         st.error(f"Erro ao criar evento: {e}")
         return False, None
 
 
-def registrar_participante(event_id: int, nome: str) -> bool:
+def registrar_participante(id_event: int, nome: str) -> bool:
     session = get_session()
     try:
         session.execute(
             text("""
-                INSERT INTO event_participants (event_id, participant_name)
-                VALUES (:event_id, :nome)
+                INSERT INTO event_participants (id_event, participant_name)
+                VALUES (:id_event, :nome)
             """),
-            {"event_id": event_id, "nome": nome},
+            {"id_event": id_event, "nome": nome},
         )
         session.commit()
         return True
@@ -177,7 +177,7 @@ with col2:
         elif not nome_novo_evento.strip():
             st.error(f"❌ {nome_criador} Informe o nome de sua ideia!")
         else:
-            sucesso_criacao, event_id = criar_evento(
+            sucesso_criacao, id_event = criar_evento(
                 nome_novo_evento.strip(), nome_criador.strip()
             )
             if sucesso_criacao:
@@ -215,7 +215,7 @@ if participantes:
     st.metric("Total de Participantes Únicos", len(df_unicos))
     st.dataframe(
         df_unicos.rename(columns={"participant_name": "Nome"}),
-        use_container_width=True,
+        width="stretch",
         hide_index=True,
     )
 else:
