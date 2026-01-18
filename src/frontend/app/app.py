@@ -164,7 +164,6 @@ def registrar_participante(id_event: int, nome: str):
 
 
 # ==================== INTERFACE STREAMLIT ====================
-st.divider()
 
 col1, col2 = st.columns(2)
 
