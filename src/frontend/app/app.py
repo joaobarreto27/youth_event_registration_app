@@ -135,7 +135,7 @@ with col1:
 
             if votos_com_sucesso > 0:
                 st.success(
-                    f"✅ {votos_com_sucesso} novo(s) voto(s) registrado(s) com sucesso!"
+                    f"✅ **{nome_votante}** {votos_com_sucesso} novo(s) voto(s) registrado(s) com sucesso!"
                 )
                 st.cache_data.clear()
                 time.sleep(5.0)
