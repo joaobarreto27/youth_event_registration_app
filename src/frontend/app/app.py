@@ -124,50 +124,50 @@ if st.button("🚀 Criar Ideia de Evento e Votar", width="stretch"):
     if not nome_criador.strip() or not nome_novo_evento.strip():
         st.error("❌ Preencha seu nome e a sua ideia de evento!")
     else:
-        sucesso, id_novo = criar_evento(nome_novo_evento, nome_criador)
+        # 1. Tenta criar o evento novo
+        sucesso_criacao, id_novo = criar_evento(nome_novo_evento, nome_criador)
 
-        if sucesso:
-            # Listas para organizar o que aconteceu nos "outros eventos"
-            votos_adicionais_sucesso = []
-            votos_adicionais_duplicados = []
+        # 2. LISTAS PARA ARMAZENAR RESULTADOS DOS VOTOS ADICIONAIS
+        votos_ad_sucesso = []
+        votos_ad_duplicados = []
 
-            # Processa os votos adicionais
-            for ev_nome in outros_eventos:
-                status = registrar_participante(eventos_map[ev_nome], nome_criador)
-                if status == "sucesso":
-                    votos_adicionais_sucesso.append(ev_nome)
-                elif status == "duplicado":
-                    votos_adicionais_duplicados.append(ev_nome)
+        # 3. PROCESSA OS VOTOS ADICIONAIS (FORA DO IF SUCESSO)
+        # Assim, mesmo que a criação falhe, os outros votos são contabilizados
+        for ev_nome in outros_eventos:
+            status = registrar_participante(eventos_map[ev_nome], nome_criador)
+            if status == "sucesso":
+                votos_ad_sucesso.append(ev_nome)
+            elif status == "duplicado":
+                votos_ad_duplicados.append(ev_nome)
 
-            # 1. Mensagem Principal de Criação
-            st.success(
-                f"✅ {nome_criador}, a ideia **{nome_novo_evento}** foi criada e seu voto nela computado!"
-            )
+        # --- EXIBIÇÃO DAS MENSAGENS ---
 
-            # 2. Se houver votos duplicados nos adicionais, mostra o aviso
-            if votos_adicionais_duplicados:
-                lista_dup = ", ".join(votos_adicionais_duplicados)
-                st.warning(
-                    f"⚠️ {nome_criador}, você já tinha votado em: {lista_dup}. Esses votos não foram repetidos."
-                )
-
-            # 3. Se houver sucessos nos adicionais, mostra a confirmação
-            if votos_adicionais_sucesso:
-                lista_suc = ", ".join(votos_adicionais_sucesso)
-                st.success(
-                    f"🎉 {nome_criador} Votos extras registrados em: {lista_suc}"
-                )
-
-            # Espera para leitura e reinicia
-            time.sleep(5)
-            st.cache_data.clear()
-            st.rerun()
-
+        # Mensagem sobre a Criação da Ideia Nova
+        if sucesso_criacao:
+            st.success(f"✅ {nome_criador}, a ideia **{nome_novo_evento}** foi criada!")
         else:
             st.error(
-                f"❌ {nome_criador}, ocorreu um erro: a ideia **{nome_novo_evento}** já foi criada por outro jovem. "
+                f"❌ {nome_criador}, ocorreu um erro ao registrar sua ideia **{nome_novo_evento}**, pois já foi criada por outro jovem. "
                 "Vote nela na seção de votação acima!"
             )
+
+        # Mensagem sobre os Votos Duplicados (Agora ela aparece sempre que houver!)
+        if votos_ad_duplicados:
+            lista_dup = ", ".join(votos_ad_duplicados)
+            st.warning(
+                f"⚠️ {nome_criador}, você já tinha votado em: **{lista_dup}**, vote em outras opções."
+            )
+
+        # Mensagem sobre Votos Adicionais com Sucesso
+        if votos_ad_sucesso:
+            lista_suc = ", ".join(votos_ad_sucesso)
+            st.success(f"🎉 Votos extras registrados em: **{lista_suc}**!")
+
+        # 4. RECARREGA SE HOUVE QUALQUER SUCESSO
+        if sucesso_criacao or votos_ad_sucesso:
+            st.cache_data.clear()
+            time.sleep(5)
+            st.rerun()
 
 # -------------------- COLUNA VOTAR --------------------
 st.divider()
