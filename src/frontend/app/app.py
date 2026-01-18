@@ -160,7 +160,7 @@ with col2:
                 for ev_nome in outros_eventos:
                     registrar_participante(eventos_map[ev_nome], nome_criador)
 
-                st.toast("Sucesso total!", icon="🎉")
+                st.success("Sucesso total!", icon="🎉")
                 time.sleep(2)
                 st.cache_data.clear()
                 st.rerun()
