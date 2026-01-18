@@ -11,7 +11,7 @@ col_logo, col_titulo = st.columns([1, 8])
 with col_logo:
     current_dir = os.path.dirname(__file__)
     logo_path = os.path.join(current_dir, "logo.png")
-    st.image(logo_path, width=80)
+    st.image(logo_path, width=100)
 
 with col_titulo:
     st.title("🎯 Formulário de Ideia de Eventos Jovens AduPno")
@@ -100,7 +100,6 @@ def registrar_participante(id_event: int, nome: str):
 
 
 # ==================== INTERFACE STREAMLIT ====================
-st.title("🎯 Formulário de Ideia de Eventos Jovens AduPno")
 st.divider()
 
 col1, col2 = st.columns(2)
