@@ -1,6 +1,7 @@
+import time
+from psycopg2 import IntegrityError
+from sqlalchemy import text
 import streamlit as st
-import os
-import base64
 import pandas as pd
 
 # ==================== CONFIGURAÇÃO DA PÁGINA ====================
@@ -44,7 +45,7 @@ def criar_evento(nome_evento: str, nome_criador: str):
             text("INSERT INTO events (event_name) VALUES (:nome) RETURNING id_event"),
             {"nome": nome_evento},
         )
-        id_event = result.fetchone()[0]
+        id_event = result.fetchone()[0]  # pyright: ignore[reportOptionalSubscript]
 
         # 2. Registra na registered_events (Note: usei created_date conforme seu último código)
         session.execute(
@@ -96,95 +97,93 @@ def registrar_participante(id_event: int, nome: str):
 
 # ==================== INTERFACE STREAMLIT ====================
 
-col1, col2 = st.columns(2)
-
 # Carrega dados para os selects
 eventos = listar_eventos_registrados()
 eventos_map = {e["event_name"]: e["id_event"] for e in eventos}
 
-# -------------------- COLUNA 1 — VOTAR --------------------
-with col1:
-    st.subheader("🗳️ Votar em Ideias de Eventos")
-    st.markdown("Vote nas ideias de eventos que você mais gostaria que tivesse!")
-    nome_votante = st.text_input(
-        "👤 Seu nome", placeholder="Digite seu nome completo", key="nome_votante"
-    )
+# -------------------- COLUNA VOTAR --------------------
 
-    eventos_selecionados = st.multiselect(
-        "🎉 Selecione as ideias",
-        options=list(eventos_map.keys()),
-        placeholder="Escolha uma ou mais ideias",
-        key="eventos_selecionados",
-    )
+st.subheader("🗳️ Votar em Ideias de Eventos")
+st.markdown("Vote nas ideias de eventos que você mais gostaria que tivesse!")
+nome_votante = st.text_input(
+    "👤 Seu nome", placeholder="Digite seu nome completo", key="nome_votante"
+)
 
-    if st.button("✅ Confirmar Voto", width="stretch"):
-        if not nome_votante.strip():
-            st.error("❌ Por favor, informe seu nome.")
-        elif not eventos_selecionados:
-            st.error(f"❌ **{nome_votante}** selecione ao menos uma ideia para votar!")
+eventos_selecionados = st.multiselect(
+    "🎉 Selecione as ideias",
+    options=list(eventos_map.keys()),
+    placeholder="Escolha uma ou mais ideias",
+    key="eventos_selecionados",
+)
+
+if st.button("✅ Confirmar Voto", width="stretch"):
+    if not nome_votante.strip():
+        st.error("❌ Por favor, informe seu nome.")
+    elif not eventos_selecionados:
+        st.error(f"❌ **{nome_votante}** selecione ao menos uma ideia para votar!")
+    else:
+        votos_com_sucesso = 0
+        for ev_nome in eventos_selecionados:
+            status = registrar_participante(eventos_map[ev_nome], nome_votante)
+            if status == "sucesso":
+                votos_com_sucesso += 1
+            elif status == "duplicado":
+                st.warning(
+                    f"⚠️ {nome_votante} você já votou nesta ideia de evento, vote em uma outra ideia ou crie uma nova ideia na sessão abaixo **➕ Criar Nova Ideia de Evento**"
+                )
+
+        if votos_com_sucesso > 0:
+            st.success(
+                f"✅ **{nome_votante}** novo(s) voto(s) registrado(s) com sucesso!"
+            )
+            st.cache_data.clear()
+            time.sleep(5.0)
+            st.rerun()
+
+# -------------------- COLUNA - CRIAR --------------------
+st.divider()
+st.subheader("➕ Criar Nova Ideia de Evento")
+st.markdown("Proponha novas ideias de eventos e vote nelas!")
+
+nome_criador = st.text_input(
+    "👤 Seu Nome", placeholder="Digite seu nome completo", key="criador_nome"
+)
+nome_novo_evento = st.text_input(
+    "🎯 Nome da Ideia",
+    placeholder="ex: Boliche, Karaoke...",
+    key="novo_evento_nome",
+)
+
+outros_eventos = st.multiselect(
+    "🎉 Votar em outras ideias de eventos também (opcional)",
+    options=list(eventos_map.keys()),
+    placeholder="Selecione uma ou mais ideias de eventos",
+    key="outros_eventos_voto",
+)
+
+if st.button("🚀 Criar Ideia de Evento e Votar", width="stretch"):
+    if not nome_criador.strip() or not nome_novo_evento.strip():
+        st.error("❌ Preencha seu nome e o nome da ideia.")
+    else:
+        sucesso, id_novo = criar_evento(nome_novo_evento, nome_criador)
+
+        if sucesso:
+            st.success(
+                f"✅ {nome_criador} a sua ideia de evento **{nome_novo_evento}** foi registrada e seu voto foi computado. Muito obrigado!"
+            )
+
+            # Vota nos adicionais
+            for ev_nome in outros_eventos:
+                registrar_participante(eventos_map[ev_nome], nome_criador)
+
+            st.success("✅ Sucesso total!", icon="🎉")
+            time.sleep(2)
+            st.cache_data.clear()
+            st.rerun()
         else:
-            votos_com_sucesso = 0
-            for ev_nome in eventos_selecionados:
-                status = registrar_participante(eventos_map[ev_nome], nome_votante)
-                if status == "sucesso":
-                    votos_com_sucesso += 1
-                elif status == "duplicado":
-                    st.warning(
-                        f"⚠️ {nome_votante} você já votou nesta ideia de evento, vote em uma outra ideia ou crie uma nova ideia na sessão abaixo **➕ Criar Nova Ideia de Evento**"
-                    )
-
-            if votos_com_sucesso > 0:
-                st.success(
-                    f"✅ **{nome_votante}** novo(s) voto(s) registrado(s) com sucesso!"
-                )
-                st.cache_data.clear()
-                time.sleep(5.0)
-                st.rerun()
-
-# -------------------- COLUNA 2 — CRIAR --------------------
-with col2:
-    st.subheader("➕ Criar Nova Ideia de Evento")
-    st.markdown("Proponha novas ideias de eventos e vote nelas!")
-
-    nome_criador = st.text_input(
-        "👤 Seu Nome", placeholder="Digite seu nome completo", key="criador_nome"
-    )
-    nome_novo_evento = st.text_input(
-        "🎯 Nome da Ideia",
-        placeholder="ex: Boliche, Karaoke...",
-        key="novo_evento_nome",
-    )
-
-    outros_eventos = st.multiselect(
-        "🎉 Votar em outras ideias de eventos também (opcional)",
-        options=list(eventos_map.keys()),
-        placeholder="Selecione uma ou mais ideias de eventos",
-        key="outros_eventos_voto",
-    )
-
-    if st.button("🚀 Criar Ideia de Evento e Votar", width="stretch"):
-        if not nome_criador.strip() or not nome_novo_evento.strip():
-            st.error("❌ Preencha seu nome e o nome da ideia.")
-        else:
-            sucesso, id_novo = criar_evento(nome_novo_evento, nome_criador)
-
-            if sucesso:
-                st.success(
-                    f"✅ {nome_criador} a sua ideia de evento **{nome_novo_evento}** foi registrada e seu voto foi computado. Muito obrigado!"
-                )
-
-                # Vota nos adicionais
-                for ev_nome in outros_eventos:
-                    registrar_participante(eventos_map[ev_nome], nome_criador)
-
-                st.success("✅ Sucesso total!", icon="🎉")
-                time.sleep(2)
-                st.cache_data.clear()
-                st.rerun()
-            else:
-                st.error(
-                    f"❌ {nome_criador} ocorreu um erro ao criar sua ideia **{nome_novo_evento}**, pois esta ideia já foi criada por outro jovem, vote nesta ideia **{nome_novo_evento}** na sessão abaixo **(🗳️ Votar em Ideias de Eventos)**."
-                )
+            st.error(
+                f"❌ {nome_criador} ocorreu um erro ao criar sua ideia **{nome_novo_evento}**, pois esta ideia já foi criada por outro jovem, vote nesta ideia **{nome_novo_evento}** na sessão abaixo **(🗳️ Votar em Ideias de Eventos)**."
+            )
 
 # -------------------- TABELA DE PARTICIPANTES --------------------
 st.divider()
