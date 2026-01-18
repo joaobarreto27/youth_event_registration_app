@@ -130,12 +130,12 @@ with col1:
                     votos_com_sucesso += 1
                 elif status == "duplicado":
                     st.warning(
-                        f"⚠️ {nome_votante} você já votou nesta ideia de evento, vote em uma outra ideia ou crie uma nova ideia na sessão ao lado **➕ Criar Nova Ideia de Evento**"
+                        f"⚠️ {nome_votante} você já votou nesta ideia de evento, vote em uma outra ideia ou crie uma nova ideia na sessão abaixo **➕ Criar Nova Ideia de Evento**"
                     )
 
             if votos_com_sucesso > 0:
                 st.success(
-                    f"✅ **{nome_votante}** {votos_com_sucesso} novo(s) voto(s) registrado(s) com sucesso!"
+                    f"✅ **{nome_votante}** novo(s) voto(s) registrado(s) com sucesso!"
                 )
                 st.cache_data.clear()
                 time.sleep(5.0)
@@ -183,7 +183,7 @@ with col2:
                 st.rerun()
             else:
                 st.error(
-                    f"❌ {nome_criador} ocorreu um erro ao criar sua ideia **{nome_novo_evento}**, pois esta ideia já foi criada por outro jovem, vote nesta ideia **{nome_novo_evento}** na sessão ao lado **(🗳️ Votar em Ideias de Eventos)**."
+                    f"❌ {nome_criador} ocorreu um erro ao criar sua ideia **{nome_novo_evento}**, pois esta ideia já foi criada por outro jovem, vote nesta ideia **{nome_novo_evento}** na sessão abaixo **(🗳️ Votar em Ideias de Eventos)**."
                 )
 
 # -------------------- TABELA DE PARTICIPANTES --------------------
