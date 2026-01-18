@@ -72,7 +72,6 @@ def criar_evento(nome_evento: str, nome_criador: str):
         return False, None
     except Exception as e:
         session.rollback()
-        st.error(f"Erro técnico: {e}")
         return False, None
 
 
@@ -101,8 +100,53 @@ def registrar_participante(id_event: int, nome: str):
 eventos = listar_eventos_registrados()
 eventos_map = {e["event_name"]: e["id_event"] for e in eventos}
 
-# -------------------- COLUNA VOTAR --------------------
+# -------------------- COLUNA - CRIAR --------------------
+st.divider()
+st.subheader("➕ Criar Nova Ideia de Evento")
+st.markdown("Proponha novas ideias de eventos e vote nelas!")
 
+nome_criador = st.text_input(
+    "👤 Seu Nome", placeholder="Digite seu nome completo", key="criador_nome"
+)
+nome_novo_evento = st.text_input(
+    "🎯 Nome da Ideia",
+    placeholder="ex: Boliche, Karaoke...",
+    key="novo_evento_nome",
+)
+
+outros_eventos = st.multiselect(
+    "🎉 Votar em outras ideias de eventos também (opcional)",
+    options=list(eventos_map.keys()),
+    placeholder="Selecione uma ou mais ideias de eventos",
+    key="outros_eventos_voto",
+)
+
+if st.button("🚀 Criar Ideia de Evento e Votar", width="stretch"):
+    if not nome_criador.strip() or not nome_novo_evento.strip():
+        st.error("❌ Preencha seu nome e o nome da ideia.")
+    else:
+        sucesso, id_novo = criar_evento(nome_novo_evento, nome_criador)
+
+        if sucesso:
+            st.success(
+                f"✅ {nome_criador} a sua ideia de evento **{nome_novo_evento}** foi registrada e seu voto foi computado. Muito obrigado!"
+            )
+
+            # Vota nos adicionais
+            for ev_nome in outros_eventos:
+                registrar_participante(eventos_map[ev_nome], nome_criador)
+
+            st.success("✅ Sucesso total!", icon="🎉")
+            time.sleep(2)
+            st.cache_data.clear()
+            st.rerun()
+        else:
+            st.error(
+                f"❌ {nome_criador} ocorreu um erro ao criar sua ideia **{nome_novo_evento}**, pois esta ideia já foi criada por outro jovem, vote nesta ideia **{nome_novo_evento}** na sessão abaixo **(🗳️ Votar em Ideias de Eventos)**."
+            )
+
+# -------------------- COLUNA VOTAR --------------------
+st.divider()
 st.subheader("🗳️ Votar em Ideias de Eventos")
 st.markdown("Vote nas ideias de eventos que você mais gostaria que tivesse!")
 nome_votante = st.text_input(
@@ -153,51 +197,6 @@ if st.button("✅ Confirmar Voto", width="stretch"):
         elif votos_duplicados:
             st.info(
                 "💡 Como você já votou nessas ideias, que tal propor uma nova abaixo?"
-            )
-
-# -------------------- COLUNA - CRIAR --------------------
-st.divider()
-st.subheader("➕ Criar Nova Ideia de Evento")
-st.markdown("Proponha novas ideias de eventos e vote nelas!")
-
-nome_criador = st.text_input(
-    "👤 Seu Nome", placeholder="Digite seu nome completo", key="criador_nome"
-)
-nome_novo_evento = st.text_input(
-    "🎯 Nome da Ideia",
-    placeholder="ex: Boliche, Karaoke...",
-    key="novo_evento_nome",
-)
-
-outros_eventos = st.multiselect(
-    "🎉 Votar em outras ideias de eventos também (opcional)",
-    options=list(eventos_map.keys()),
-    placeholder="Selecione uma ou mais ideias de eventos",
-    key="outros_eventos_voto",
-)
-
-if st.button("🚀 Criar Ideia de Evento e Votar", width="stretch"):
-    if not nome_criador.strip() or not nome_novo_evento.strip():
-        st.error("❌ Preencha seu nome e o nome da ideia.")
-    else:
-        sucesso, id_novo = criar_evento(nome_novo_evento, nome_criador)
-
-        if sucesso:
-            st.success(
-                f"✅ {nome_criador} a sua ideia de evento **{nome_novo_evento}** foi registrada e seu voto foi computado. Muito obrigado!"
-            )
-
-            # Vota nos adicionais
-            for ev_nome in outros_eventos:
-                registrar_participante(eventos_map[ev_nome], nome_criador)
-
-            st.success("✅ Sucesso total!", icon="🎉")
-            time.sleep(2)
-            st.cache_data.clear()
-            st.rerun()
-        else:
-            st.error(
-                f"❌ {nome_criador} ocorreu um erro ao criar sua ideia **{nome_novo_evento}**, pois esta ideia já foi criada por outro jovem, vote nesta ideia **{nome_novo_evento}** na sessão abaixo **(🗳️ Votar em Ideias de Eventos)**."
             )
 
 # -------------------- TABELA DE PARTICIPANTES --------------------
