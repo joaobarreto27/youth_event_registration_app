@@ -135,9 +135,6 @@ if st.button("✅ Confirmar Voto", width="stretch"):
             else:
                 erros.append(f"{ev_nome} ({status})")
 
-        for erro in erros:
-            st.error(f"❌ Erro ao processar: {erro}")
-
         if votos_duplicados:
             lista_duplicados = ", ".join(votos_duplicados)
             st.warning(
