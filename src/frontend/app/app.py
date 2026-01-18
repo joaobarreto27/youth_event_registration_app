@@ -168,7 +168,7 @@ if st.button("🚀 Criar Ideia de Evento e Votar", width="stretch"):
             time.sleep(5)
             st.rerun()
 
-# -------------------- COLUNA VOTAR --------------------
+# -------------------- COLUNA VOTAR -------------------
 st.divider()
 st.subheader("🗳️ Votar em Ideias de Eventos")
 st.markdown("Vote nas ideias de eventos que você mais gostaria que tivesse!")
