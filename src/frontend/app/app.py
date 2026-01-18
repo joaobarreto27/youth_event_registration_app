@@ -121,8 +121,15 @@ outros_eventos = st.multiselect(
 )
 
 if st.button("🚀 Criar Ideia de Evento e Votar", width="stretch"):
-    if not nome_criador.strip() or not nome_novo_evento.strip():
-        st.error("❌ Preencha seu nome e a sua ideia de evento!")
+    if not nome_criador.strip():
+        st.error("❌ Por favor, informe seu nome para continuar.")
+
+    elif not nome_novo_evento.strip():
+        st.warning("💡 **Você quer apenas votar em ideias existentes?**")
+        st.info(
+            f"Olá **{nome_criador}**, notamos que você não propôs uma ideia nova. "
+            "Para **apenas votar**, utilize a seção logo abaixo: **🗳️ Votar em Ideias de Eventos**."
+        )
     else:
         sucesso_criacao, id_novo = criar_evento(nome_novo_evento, nome_criador)
 
