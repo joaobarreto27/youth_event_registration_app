@@ -7,35 +7,56 @@ from sqlalchemy.exc import IntegrityError
 
 # ==================== CABEÇALHO COM LOGO ====================
 
+st.set_page_config(
+    page_title="Registro de Ideia de Eventos", page_icon="🎯", layout="wide"
+)
+
+# 2. CSS para alinhamento vertical e uso de espaço
 st.markdown(
     """
     <style>
-    /* Alinha verticalmente as colunas do cabeçalho */
-    header_style { } /* Apenas um marcador de comentário */
+    /* Centraliza verticalmente o logo e o título */
     [data-testid="column"] {
         display: flex;
         align-items: center;
         justify-content: flex-start;
     }
-    /* Ajuste opcional: remove a margem extra que o st.title cria no topo */
-    h1 {
-        margin-top: 0rem;
-        padding-top: 0rem;
+    /* Faz o título ocupar o espaço total da coluna e não quebrar linha cedo */
+    .main-title {
+        font-size: 2.5rem !important;
+        font-weight: 700;
+        margin-left: -20px; /* Aproxima um pouco o texto do logo */
+        white-space: nowrap;
+    }
+    /* Remove espaços em branco excessivos no topo */
+    .block-container {
+        padding-top: 2rem;
     }
     </style>
     """,
     unsafe_allow_html=True,
 )
 
-col_logo, col_titulo = st.columns([1, 8])
+# 3. Cabeçalho Largo
+# Aumentamos a proporção da primeira coluna para comportar um logo maior
+col_logo, col_titulo = st.columns([1.5, 8])
 
 with col_logo:
     current_dir = os.path.dirname(__file__)
     logo_path = os.path.join(current_dir, "logo.png")
-    st.image(logo_path, width=150)
+
+    if os.path.exists(logo_path):
+        # Aumentamos para 250 para ocupar bem o espaço lateral
+        st.image(logo_path, width=250)
+    else:
+        st.error("Logo não encontrado")
 
 with col_titulo:
-    st.title("🎯 Formulário de Ideia de Eventos Jovens AduPno")
+    # Usamos st.markdown com uma classe CSS para maior controle de tamanho
+    st.markdown(
+        '<h1 class="main-title">🎯 Formulário de Ideia de Eventos Jovens AduPno</h1>',
+        unsafe_allow_html=True,
+    )
 
 # ==================== CONEXÃO COM O BANCO ====================
 conn = st.connection("my_postgres", type="sql")
