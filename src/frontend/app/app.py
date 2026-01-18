@@ -1,84 +1,15 @@
 import streamlit as st
 import os
 import base64
+import pandas as pd
 
-# 1. Configuração da página (Deve ser sempre o primeiro comando Streamlit)
+# ==================== CONFIGURAÇÃO DA PÁGINA ====================
 st.set_page_config(
     page_title="Registro de Ideia de Eventos", page_icon="🎯", layout="wide"
 )
 
-
-# Função para converter imagem para base64
-def get_base64_img(img_path):
-    try:
-        with open(img_path, "rb") as img_file:
-            return base64.b64encode(img_file.read()).decode()
-    except Exception:
-        return None
-
-
-# 2. Lógica do Cabeçalho e CSS
-current_dir = os.path.dirname(__file__)
-logo_path = os.path.join(current_dir, "logo.png")
-img_base64 = get_base64_img(logo_path)
-
-if img_base64:
-    st.markdown(
-        f"""
-        <style>
-        .header-container {{
-            display: flex;
-            align-items: center;
-            gap: 15px;
-            padding: 10px 0;
-            width: 100%;
-        }}
-
-        .logo-img {{
-            flex-shrink: 0;
-            border-radius: 8px;
-            object-fit: contain;
-            display: block;
-        }}
-
-        .main-title {{
-            font-weight: 700;
-            line-height: 1.2;
-            margin: 0;
-            white-space: normal;
-            word-wrap: break-word;
-        }}
-
-        /* Computador */
-        @media (min-width: 768px) {{
-            .logo-img {{ height: 120px; width: auto; }}
-            .main-title {{ font-size: 2.5rem; }}
-        }}
-
-        /* Celular */
-        @media (max-width: 767px) {{
-            .header-container {{ gap: 12px; }}
-            .logo-img {{ height: 60px; width: auto; }}
-            .main-title {{
-                font-size: 1.1rem !important;
-                flex: 1;
-            }}
-        }}
-
-        .block-container {{ padding-top: 1.5rem; }}
-        </style>
-
-        <div class="header-container">
-            <img src="data:image/png;base64,{img_base64}" class="logo-img">
-            <h1 class="main-title">🎯 Formulário de Ideia de Eventos Jovens AduPno</h1>
-        </div>
-        <hr style="margin-top: 5px; margin-bottom: 20px;">
-        """,
-        unsafe_allow_html=True,
-    )
-else:
-    st.title("🎯 Formulário de Ideia de Eventos Jovens AduPno")
-    st.warning("Aviso: Arquivo logo.png não encontrado na pasta do app.")
+st.header("🎯 Formulário de Registro de Ideia de Eventos Jovens AduPno")
+st.divider()
 
 # ==================== CONEXÃO COM O BANCO ====================
 conn = st.connection("my_postgres", type="sql")
