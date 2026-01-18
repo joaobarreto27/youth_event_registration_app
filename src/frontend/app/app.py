@@ -131,6 +131,7 @@ if st.button("✅ Confirmar Voto", width="stretch"):
                 st.warning(
                     f"⚠️ {nome_votante} você já votou nesta ideia de evento, vote em uma outra ideia ou crie uma nova ideia na sessão abaixo **➕ Criar Nova Ideia de Evento**"
                 )
+                time.sleep(5.0)
 
         if votos_com_sucesso > 0:
             st.success(
