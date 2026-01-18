@@ -134,9 +134,11 @@ with col1:
                     )
 
             if votos_com_sucesso > 0:
-                st.success(f"{votos_com_sucesso} voto(s) registrado(s)!", icon="✅")
-                time.sleep(1.5)
+                st.success(
+                    f"✅ {votos_com_sucesso} novo(s) voto(s) registrado(s) com sucesso!"
+                )
                 st.cache_data.clear()
+                time.sleep(5.0)
                 st.rerun()
 
 # -------------------- COLUNA 2 — CRIAR --------------------
