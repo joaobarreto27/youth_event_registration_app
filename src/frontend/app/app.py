@@ -145,7 +145,7 @@ with col2:
         "🎉 Aproveite e vote em outros também", options=list(eventos_map.keys())
     )
 
-    if st.button("🚀 Criar e Votar", width='stretch'=True):
+    if st.button("🚀 Criar e Votar", width='stretch'):
         if not nome_criador.strip() or not nome_novo_evento.strip():
             st.error("❌ Preencha seu nome e o nome da ideia.")
         else:
