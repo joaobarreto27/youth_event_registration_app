@@ -101,7 +101,6 @@ eventos = listar_eventos_registrados()
 eventos_map = {e["event_name"]: e["id_event"] for e in eventos}
 
 # -------------------- COLUNA - CRIAR --------------------
-st.divider()
 st.subheader("➕ Criar Nova Ideia de Evento")
 st.markdown("Proponha novas ideias de eventos e vote nelas!")
 
@@ -136,7 +135,10 @@ if st.button("🚀 Criar Ideia de Evento e Votar", width="stretch"):
             for ev_nome in outros_eventos:
                 registrar_participante(eventos_map[ev_nome], nome_criador)
 
-            st.success("✅ Sucesso total!", icon="🎉")
+            st.success(
+                f"✅ {nome_criador}, sua ideia foi registrada em {outros_eventos} Sucesso total!",
+                icon="🎉",
+            )
             time.sleep(2)
             st.cache_data.clear()
             st.rerun()
