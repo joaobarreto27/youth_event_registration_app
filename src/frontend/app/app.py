@@ -70,7 +70,7 @@ def criar_evento(nome_evento: str, nome_criador: str):
     except IntegrityError:
         session.rollback()
         return False, None
-    except Exception as e:
+    except Exception:
         session.rollback()
         return False, None
 
