@@ -113,7 +113,7 @@ with col1:
         placeholder="Escolha uma ou mais ideias",
     )
 
-    if st.button("✅ Confirmar Voto", width='stretch'=True):
+    if st.button("✅ Confirmar Voto", width="stretch"):
         if not nome_votante.strip():
             st.error("❌ Por favor, informe seu nome.")
         elif not eventos_selecionados:
@@ -145,7 +145,7 @@ with col2:
         "🎉 Aproveite e vote em outros também", options=list(eventos_map.keys())
     )
 
-    if st.button("🚀 Criar e Votar", width='stretch'):
+    if st.button("🚀 Criar e Votar", width="stretch"):
         if not nome_criador.strip() or not nome_novo_evento.strip():
             st.error("❌ Preencha seu nome e o nome da ideia.")
         else:
@@ -180,7 +180,7 @@ if participantes:
     st.metric("Total de Jovens", len(df))
     st.dataframe(
         df.rename(columns={"participant_name": "Nome"}),
-        width='stretch',
+        width="stretch",
         hide_index=True,
     )
 else:
