@@ -135,11 +135,12 @@ if st.button("🚀 Criar Ideia de Evento e Votar", width="stretch"):
             for ev_nome in outros_eventos:
                 registrar_participante(eventos_map[ev_nome], nome_criador)
 
+            lista_outros_eventos_formatada = ", ".join(outros_eventos)
             st.success(
-                f"✅ {nome_criador}, sua ideia foi registrada em {outros_eventos} Sucesso total!",
+                f"✅ {nome_criador}, sua ideia foi registrada em {lista_outros_eventos_formatada} Sucesso total!",
                 icon="🎉",
             )
-            time.sleep(2)
+            time.sleep(5)
             st.cache_data.clear()
             st.rerun()
         else:
