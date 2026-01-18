@@ -135,11 +135,10 @@ if st.button("✅ Confirmar Voto", width="stretch"):
             else:
                 erros.append(f"{ev_nome} ({status})")
 
-        if votos_duplicados:
+        for erro in erros:
             lista_formatada = ", ".join(votos_duplicados)
             st.warning(
-                f"⚠️ **{nome_votante}**, você já tinha votado em: **{lista_formatada}**. "
-                "Estes votos não foram repetidos."
+                f"⚠️ **{nome_votante}**, você já tinha votado em: {votos_duplicados}. Esses votos não foram repetidos."
             )
 
         if votos_com_sucesso:
