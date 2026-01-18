@@ -180,7 +180,7 @@ if participantes:
     st.metric("Total de Jovens", len(df))
     st.dataframe(
         df.rename(columns={"participant_name": "Nome"}),
-        width='stretch'=True,
+        width='stretch',
         hide_index=True,
     )
 else:
