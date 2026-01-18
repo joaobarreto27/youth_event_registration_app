@@ -105,19 +105,23 @@ eventos_map = {e["event_name"]: e["id_event"] for e in eventos}
 # -------------------- COLUNA 1 — VOTAR --------------------
 with col1:
     st.subheader("🗳️ Votar em Ideias de Eventos")
-    nome_votante = st.text_input("👤 Seu nome", placeholder="Nome completo", key="nv")
+    st.markdown("Vote nas ideias de eventos que você mais gostaria que tivesse!")
+    nome_votante = st.text_input(
+        "👤 Seu nome", placeholder="Digite seu nome completo", key="nome_votante"
+    )
 
     eventos_selecionados = st.multiselect(
         "🎉 Selecione as ideias",
         options=list(eventos_map.keys()),
         placeholder="Escolha uma ou mais ideias",
+        key="eventos_selecionados",
     )
 
     if st.button("✅ Confirmar Voto", width="stretch"):
         if not nome_votante.strip():
             st.error("❌ Por favor, informe seu nome.")
         elif not eventos_selecionados:
-            st.error("❌ Selecione ao menos uma ideia.")
+            st.error(f"❌ **{nome_votante}** selecione ao menos uma ideia para votar!")
         else:
             votos_com_sucesso = 0
             for ev_nome in eventos_selecionados:
@@ -125,7 +129,9 @@ with col1:
                 if status == "sucesso":
                     votos_com_sucesso += 1
                 elif status == "duplicado":
-                    st.warning(f"⚠️ {nome_votante}, você já votou em: {ev_nome}")
+                    st.warning(
+                        f"⚠️ {nome_votante} você já votou nesta ideia de evento, vote em uma outra ideia ou crie uma nova ideia na sessão ao lado **➕ Criar Nova Ideia de Evento**"
+                    )
 
             if votos_com_sucesso > 0:
                 st.success(f"{votos_com_sucesso} voto(s) registrado(s)!", icon="✅")
@@ -135,17 +141,26 @@ with col1:
 
 # -------------------- COLUNA 2 — CRIAR --------------------
 with col2:
-    st.subheader("➕ Criar Nova Ideia")
-    nome_criador = st.text_input("👤 Seu Nome", placeholder="Seu nome", key="nc")
+    st.subheader("➕ Criar Nova Ideia de Evento")
+    st.markdown("Proponha novas ideias de eventos e vote nelas!")
+
+    nome_criador = st.text_input(
+        "👤 Seu Nome", placeholder="Digite seu nome completo", key="criador_nome"
+    )
     nome_novo_evento = st.text_input(
-        "🎯 Nome da Ideia", placeholder="Ex: Noite da Pizza"
+        "🎯 Nome da Ideia",
+        placeholder="ex: Boliche, Karaoke...",
+        key="novo_evento_nome",
     )
 
     outros_eventos = st.multiselect(
-        "🎉 Aproveite e vote em outros também", options=list(eventos_map.keys())
+        "🎉 Votar em outras ideias de eventos também (opcional)",
+        options=list(eventos_map.keys()),
+        placeholder="Selecione uma ou mais ideias de eventos",
+        key="outros_eventos_voto",
     )
 
-    if st.button("🚀 Criar e Votar", width="stretch"):
+    if st.button("🚀 Criar Ideia de Evento e Votar", width="stretch"):
         if not nome_criador.strip() or not nome_novo_evento.strip():
             st.error("❌ Preencha seu nome e o nome da ideia.")
         else:
@@ -153,20 +168,20 @@ with col2:
 
             if sucesso:
                 st.success(
-                    f"✅ Ideia **{nome_novo_evento}** criada e seu voto foi computado!"
+                    f"✅ {nome_criador} a sua ideia de evento **{nome_novo_evento}** foi registrada e seu voto foi computado. Muito obrigado!"
                 )
 
                 # Vota nos adicionais
                 for ev_nome in outros_eventos:
                     registrar_participante(eventos_map[ev_nome], nome_criador)
 
-                st.success("Sucesso total!", icon="🎉")
+                st.success("✅ Sucesso total!", icon="🎉")
                 time.sleep(2)
                 st.cache_data.clear()
                 st.rerun()
             else:
                 st.error(
-                    f"❌ {nome_criador}, a ideia **{nome_novo_evento}** já existe! Vote nela na coluna ao lado."
+                    f"❌ {nome_criador} ocorreu um erro ao criar sua ideia **{nome_novo_evento}**, pois esta ideia já foi criada por outro jovem, vote nesta ideia **{nome_novo_evento}** na sessão ao lado **(🗳️ Votar em Ideias de Eventos)**."
                 )
 
 # -------------------- TABELA DE PARTICIPANTES --------------------
@@ -184,4 +199,4 @@ if participantes:
         hide_index=True,
     )
 else:
-    st.info("Aguardando primeira contribuição...")
+    st.warning("⚠️ Aguardando primeira contribuição...")
