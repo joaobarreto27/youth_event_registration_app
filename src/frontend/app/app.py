@@ -122,24 +122,40 @@ if st.button("✅ Confirmar Voto", width="stretch"):
     elif not eventos_selecionados:
         st.error(f"❌ **{nome_votante}** selecione ao menos uma ideia para votar!")
     else:
-        votos_com_sucesso = 0
+        votos_com_sucesso = []
+        votos_duplicados = []
+        erros = []
+
         for ev_nome in eventos_selecionados:
             status = registrar_participante(eventos_map[ev_nome], nome_votante)
             if status == "sucesso":
-                votos_com_sucesso += 1
+                votos_com_sucesso.append(ev_nome)
             elif status == "duplicado":
-                st.warning(
-                    f"⚠️ {nome_votante} você já votou nesta ideia de evento, vote em uma outra ideia ou crie uma nova ideia na sessão abaixo **➕ Criar Nova Ideia de Evento**"
-                )
-                time.sleep(5.0)
+                votos_duplicados.append(ev_nome)
+            else:
+                erros.append(f"{ev_nome} ({status})")
 
-        if votos_com_sucesso > 0:
+        for erro in erros:
+            st.error(f"❌ Erro ao processar: {erro}")
+
+        if votos_duplicados:
+            lista_duplicados = ", ".join(votos_duplicados)
+            st.warning(
+                f"⚠️ **{nome_votante}**, você já tinha votado em: {lista_duplicados}. Esses votos não foram repetidos."
+            )
+
+        if votos_com_sucesso:
+            lista_sucesso = ", ".join(votos_com_sucesso)
             st.success(
                 f"✅ **{nome_votante}** novo(s) voto(s) registrado(s) com sucesso!"
             )
             st.cache_data.clear()
             time.sleep(5.0)
-            st.rerun()
+
+        elif votos_duplicados:
+            st.info(
+                "💡 Como você já votou nessas ideias, que tal propor uma nova abaixo?"
+            )
 
 # -------------------- COLUNA - CRIAR --------------------
 st.divider()
