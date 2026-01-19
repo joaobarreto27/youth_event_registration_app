@@ -57,9 +57,6 @@ def criar_evento(nome_evento: str, nome_criador: str):
                 timeout=30,
             )
             if response_registered.status_code != 200:
-                st.error(
-                    f"❌ {nome_criador} Ocorreu um erro ao registrar sua ideia de evento: {response_registered.json().get('detail', 'Erro desconhecido')}"
-                )
                 return False, None
 
             # Registrar criador como participante
@@ -74,9 +71,6 @@ def criar_evento(nome_evento: str, nome_criador: str):
             st.error(response.json().get("detail", "Erro ao criar sua ideia de evento"))
             return False, None
     except Exception:
-        st.error(
-            f"❌ {nome_criador} ocorreu um erro ao criar sua ideia **{nome_novo_evento}**, pois esta ideia já foi criada por outro jovem, vote nesta ideia **{nome_novo_evento}** na sessão ao lado **(🗳️ Votar em Ideias de Eventos)**."
-        )
         return False, None
 
 
@@ -90,9 +84,6 @@ def registrar_participante(event_id: int, nome: str):
         if response.status_code == 200:
             return True
         elif response.status_code == 409:
-            st.warning(
-                f"⚠️ {nome} você já votou nesta ideia de evento, vote em uma outra ideia ou crie uma nova ideia na sessão ao lado **➕ Criar Nova Ideia de Evento**"
-            )
             return False
         else:
             st.error(response.json().get("detail", "Erro ao registrar voto"))
