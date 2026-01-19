@@ -208,6 +208,13 @@ if st.button("✅ Confirmar Voto", width="stretch"):
                 f"⚠️ **{nome_votante}**, você já tinha votado em: **{lista_dup}**. Esses votos não foram repetidos."
             )
 
+        if erros_tecnicos:
+            st.error(
+                "❌ Ops! Tivemos um problema técnico ao registrar alguns de seus votos. Por favor, tente novamente mais tarde."
+            )
+            for erro in erros_tecnicos:
+                print(f"Log de Erro: {erro}")
+
         if votos_com_sucesso:
             lista_suc = ", ".join(votos_com_sucesso)
             st.success(
