@@ -7,7 +7,7 @@ import pandas as pd
 st.set_page_config(
     page_title="Registro de Ideia de Eventos", page_icon="🎯", layout="wide"
 )
-API_URL = "https://joaobarreto27-youth-event-registration-app.hf.space/eventos"
+API_URL = st.secrets.get("API_BASE_URL", "http://localhost:8000") + "/eventos"
 
 st.header("🎯 Formulário de Registro de Ideia de Eventos Jovens AduPno")
 st.divider()
@@ -46,7 +46,6 @@ def criar_evento(nome_evento: str, nome_criador: str):
             evento = response.json()
             event_id = evento["id_event"]
 
-            # Registrar na tabela registered_events
             response_registered = requests.post(
                 f"{API_URL}/registered/",
                 params={
@@ -94,7 +93,7 @@ def registrar_participante(event_id: int, nome: str):
 
 # Carrega dados para os selects
 eventos = listar_eventos_registrados()
-# Garante que eventos seja uma lista antes de iterar
+
 if not isinstance(eventos, list):
     eventos = []
 
