@@ -2,10 +2,7 @@ name: Sync to Hugging Face Hub
 
 on:
   push:
-    branches: [poc]
-
-permissions:
-  contents: write
+    branches: [main, dev]
 
 jobs:
   sync-to-hub:
@@ -16,17 +13,14 @@ jobs:
           fetch-depth: 0
           lfs: true
 
-      - name: Push to hub
+      - name: Push to Hub
         env:
-          HF_TOKEN: ${{ secrets.ACCESS_TOKEN_HUGGING_POC }}
+          HF_TOKEN: ${{ github.ref == 'refs/heads/main' && secrets.ACCESS_TOKEN_HUGGING_PRD || secrets.ACCESS_TOKEN_HUGGING_DEV }}
+          SPACE_NAME: ${{ github.ref == 'refs/heads/main' && 'joaobarreto27/prd_youth_event_registration_app' || 'joaobarreto27/dev_youth_event_registration_app' }}
         run: |
           git config --global user.email "github-actions[bot]@users.noreply.github.com"
           git config --global user.name "github-actions[bot]"
-          rm -rf .git
-          git init -b main
-          git add .
-          git commit -m "Deploy limpo"
 
-          git remote add space "https://joaobarreto27:$HF_TOKEN@huggingface.co/spaces/joaobarreto27/youth_event_registration_app"
+          git remote add space "https://joaobarreto27:$HF_TOKEN@huggingface.co/spaces/$SPACE_NAME"
 
-          git push space main:main -f
+          git push space HEAD:main -f
