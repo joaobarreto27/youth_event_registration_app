@@ -1,13 +1,13 @@
 import time
-from sqlalchemy.exc import IntegrityError
-from sqlalchemy import text
 import streamlit as st
+import requests
 import pandas as pd
 
 # ==================== CONFIGURAÇÃO DA PÁGINA ====================
 st.set_page_config(
     page_title="Registro de Ideia de Eventos", page_icon="🎯", layout="wide"
 )
+API_URL = "https://joaobarreto27-youth-event-registration-app.hf.space/eventos/"
 
 st.header("🎯 Formulário de Registro de Ideia de Eventos Jovens AduPno")
 st.divider()
@@ -22,76 +22,92 @@ def get_session():
 
 
 # ==================== FUNÇÕES AUXILIARES ====================
-@st.cache_data(ttl=10)
+@st.cache_data(ttl=5)
 def listar_eventos_registrados():
-    query = "SELECT id_event, event_name FROM registered_events ORDER BY event_name"
-    return conn.query(query).to_dict(orient="records")
+    try:
+        response = requests.get(f"{API_URL}/registered/", timeout=30)
+        if response.status_code == 200:
+            return response.json()
+        return []
+    except Exception as e:
+        st.error(f"Erro ao buscar eventos: {e}")
+        return []
 
 
-@st.cache_data(ttl=10)
+@st.cache_data(ttl=5)  # Cache com TTL curto
 def listar_participantes_unicos():
-    query = "SELECT DISTINCT participant_name FROM event_participants ORDER BY participant_name"
-    return conn.query(query).to_dict(orient="records")
+    try:
+        response = requests.get(f"{API_URL}/participants/unique", timeout=30)
+        if response.status_code == 200:
+            return response.json()
+        return []
+    except Exception as e:
+        st.error(f"Erro ao buscar participantes únicos: {e}")
+        return []
 
 
 def criar_evento(nome_evento: str, nome_criador: str):
-    session = get_session()
-    nome_evento = nome_evento.strip()
-    nome_criador = nome_criador.strip()
-
     try:
-        # 1. Tenta inserir na tabela mestra de eventos
-        result = session.execute(
-            text("INSERT INTO events (event_name) VALUES (:nome) RETURNING id_event"),
-            {"nome": nome_evento},
-        )
-        id_event = result.fetchone()[0]  # pyright: ignore[reportOptionalSubscript]
+        payload = {"event_name": nome_evento}
+        response = requests.post(f"{API_URL}/", json=payload, timeout=30)
+        if response.status_code == 200:
+            evento = response.json()
+            event_id = evento["id_event"]
 
-        # 2. Registra na registered_events (Note: usei created_date conforme seu último código)
-        session.execute(
-            text("""
-                INSERT INTO registered_events (id_event, event_name, created_by, created_date)
-                VALUES (:id_event, :nome, :criador, CURRENT_TIMESTAMP)
-            """),
-            {"id_event": id_event, "nome": nome_evento, "criador": nome_criador},
-        )
+            # Registrar na tabela registered_events
+            response_registered = requests.post(
+                f"{API_URL}/registered/",
+                params={
+                    "event_id": event_id,
+                    "event_name": nome_evento,
+                    "created_by": nome_criador,
+                },
+                timeout=30,
+            )
+            if response_registered.status_code != 200:
+                st.error(
+                    f"❌ {nome_criador} Ocorreu um erro ao registrar sua ideia de evento: {response_registered.json().get('detail', 'Erro desconhecido')}"
+                )
+                return False, None
 
-        # 3. Registra criador como primeiro participante (voto automático)
-        session.execute(
-            text("""
-                INSERT INTO event_participants (id_event, participant_name)
-                VALUES (:id_event, :nome)
-            """),
-            {"id_event": id_event, "nome": nome_criador},
-        )
+            # Registrar criador como participante
+            requests.post(
+                f"{API_URL}/{event_id}/participants",
+                json={"participant_name": nome_criador},
+                timeout=30,
+            )
 
-        session.commit()
-        return True, id_event
-    except IntegrityError:
-        session.rollback()
-        return False, None
+            return True, event_id
+        else:
+            st.error(response.json().get("detail", "Erro ao criar sua ideia de evento"))
+            return False, None
     except Exception:
-        session.rollback()
+        st.error(
+            f"❌ {nome_criador} ocorreu um erro ao criar sua ideia **{nome_novo_evento}**, pois esta ideia já foi criada por outro jovem, vote nesta ideia **{nome_novo_evento}** na sessão ao lado **(🗳️ Votar em Ideias de Eventos)**."
+        )
         return False, None
 
 
-def registrar_participante(id_event: int, nome: str):
-    session = get_session()
+def registrar_participante(event_id: int, nome: str):
     try:
-        session.execute(
-            text(
-                "INSERT INTO event_participants (id_event, participant_name) VALUES (:id_event, :nome)"
-            ),
-            {"id_event": id_event, "nome": nome.strip()},
+        response = requests.post(
+            f"{API_URL}/{event_id}/participants",
+            json={"participant_name": nome},
+            timeout=30,
         )
-        session.commit()
-        return "sucesso"
-    except IntegrityError:
-        session.rollback()
-        return "duplicado"
+        if response.status_code == 200:
+            return True
+        elif response.status_code == 409:
+            st.warning(
+                f"⚠️ {nome} você já votou nesta ideia de evento, vote em uma outra ideia ou crie uma nova ideia na sessão ao lado **➕ Criar Nova Ideia de Evento**"
+            )
+            return False
+        else:
+            st.error(response.json().get("detail", "Erro ao registrar voto"))
+            return False
     except Exception as e:
-        session.rollback()
-        return f"erro: {e}"
+        st.error(f"Erro ao registrar participante: {e}")
+        return False
 
 
 # ==================== INTERFACE STREAMLIT ====================
