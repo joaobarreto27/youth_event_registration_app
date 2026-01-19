@@ -14,11 +14,14 @@ RUN apt-get update && apt-get install -y \
 WORKDIR /app
 
 # Copia o arquivo de dependências
-COPY ./requirements.txt /code/requirements.txt
+COPY ./requirements.txt /app/requirements.txt
 
 # Instala as dependências do Python
 RUN pip install --no-cache-dir --upgrade pip \
     && pip install --no-cache-dir --upgrade -r requirements.txt
+
+# Expõe a porta 7860
+EXPOSE 7860
 
 # Copia o restante da aplicação
 COPY ./src /code/src
