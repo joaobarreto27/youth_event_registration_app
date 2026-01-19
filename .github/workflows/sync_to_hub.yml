@@ -18,14 +18,15 @@ jobs:
 
       - name: Push to hub
         env:
-          HF_TOKEN: ${{ secrets.ACCESS_TOKEN_HUGGING }}
+          HF_TOKEN: ${{ secrets.ACCESS_TOKEN_HUGGING_POC }}
         run: |
           git config --global user.email "github-actions[bot]@users.noreply.github.com"
           git config --global user.name "github-actions[bot]"
           rm -rf .git
-          git init
+          git init -b main
           git add .
           git commit -m "Deploy limpo"
 
-          git remote add space https://joaobarreto27:$HF_TOKEN@huggingface.co/spaces/joaobarreto27/youth_event_registration_app
-          git push space master:main -f
+          git remote add space "https://joaobarreto27:$HF_TOKEN@huggingface.co/spaces/joaobarreto27/youth_event_registration_app"
+
+          git push space main:main -f
