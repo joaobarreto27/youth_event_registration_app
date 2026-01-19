@@ -122,7 +122,7 @@ outros_eventos = st.multiselect(
 
 if st.button("🚀 Criar Ideia de Evento e Votar", width="stretch"):
     if not nome_criador.strip():
-        st.error("❌ Por favor, informe seu nome para continuar.")
+        st.error("❌ Por favor, informe seu **nome** para continuar.")
 
     elif not nome_novo_evento.strip():
         st.warning("💡 **Você quer apenas votar em ideias existentes?**")
@@ -185,7 +185,7 @@ eventos_selecionados = st.multiselect(
 
 if st.button("✅ Confirmar Voto", width="stretch"):
     if not nome_votante.strip():
-        st.error("❌ Por favor, informe seu nome.")
+        st.error("❌ Por favor, informe seu **nome** para continuar.")
     elif not eventos_selecionados:
         st.error(f"❌ **{nome_votante}** selecione ao menos uma ideia para votar!")
     else:
@@ -226,7 +226,7 @@ if st.button("✅ Confirmar Voto", width="stretch"):
 
         elif votos_duplicados:
             st.info(
-                "💡 Como você já votou nessas ideias, que tal propor uma nova acima?"
+                f"💡 {nome_votante} como você já votou nessas ideias, que tal propor uma nova acima em **➕ Criar Nova Ideia de Evento**?"
             )
 
 # -------------------- TABELA DE PARTICIPANTES --------------------
