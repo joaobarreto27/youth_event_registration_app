@@ -126,9 +126,10 @@ if st.button("🚀 Criar Ideia de Evento e Votar", width="stretch"):
         st.error("❌ Por favor, informe seu **nome** para continuar.")
 
     elif not nome_novo_evento.strip():
-        st.warning("💡 **Você quer apenas votar em ideias existentes?**")
+        st.warning(
+            f"💡 {nome_criador} **Você quer apenas votar em ideias existentes?**"
+        )
         st.info(
-            f"Olá **{nome_criador}**, notamos que você não propôs uma ideia nova. "
             "Para **apenas votar**, utilize a seção logo abaixo: **🗳️ Votar em Ideias de Eventos**."
         )
     else:
@@ -146,10 +147,10 @@ if st.button("🚀 Criar Ideia de Evento e Votar", width="stretch"):
 
         if not sucesso_criacao:
             st.error(
-                f"❌ {nome_criador}, a ideia **{nome_novo_evento}** já foi criada por outro jovem. Utilize a seção logo abaixo: **🗳️ Votar em Ideias de Eventos**!"
+                f"❌ {nome_criador}, a ideia **{nome_novo_evento}** já foi criada por outro jovem. Para votar nesta ideia utilize a seção logo abaixo: **🗳️ Votar em Ideias de Eventos**!"
             )
             st.info(
-                f"💡 {nome_criador} Que tal tentar propor uma ideia diferente de **{nome_novo_evento}**?"
+                f"💡 Que tal tentar propor uma ideia diferente de **{nome_novo_evento}**?"
             )
         else:
             st.success(
@@ -159,7 +160,7 @@ if st.button("🚀 Criar Ideia de Evento e Votar", width="stretch"):
         if votos_ad_duplicados:
             lista_dup = ", ".join(votos_ad_duplicados)
             st.warning(
-                f"⚠️ {nome_criador}, você já tinha votado em: **{lista_dup}**. Esses votos não foram repetidos."
+                f"⚠️ Você já tinha votado em: **{lista_dup}**. Esses votos não foram repetidos."
             )
 
         if votos_ad_sucesso:
@@ -180,7 +181,7 @@ nome_votante = st.text_input(
 )
 
 eventos_selecionados = st.multiselect(
-    "🎉 Selecione as ideias",
+    "🎉 Selecione as ideias que deseja votar",
     options=list(eventos_map.keys()),
     placeholder="Clique aqui e escolha quantas quiser",
     key="eventos_selecionados",
