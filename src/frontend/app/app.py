@@ -106,18 +106,23 @@ if "api_awake" not in st.session_state:
     st.session_state.api_awake = False
 
 if not st.session_state.api_awake:
-    with st.status(
-        "🚀 Acordando o servidor... Por favor, aguarde.", expanded=True
-    ) as status:
-        if check_api_health():
-            st.session_state.api_awake = True
-            status.update(label="✅ Servidor Online!", state="complete", expanded=False)
-        else:
-            st.warning(
-                "😴 A API está em modo de espera. Isso pode levar até 30 segundos para carregar."
-            )
-            time.sleep(5)  # Espera um pouco antes de tentar de novo
-            st.rerun()
+    placeholder = st.empty()
+
+    with placeholder.container():
+        with st.status("🚀 Acordando o servidor...", expanded=True) as status:
+            if check_api_health():
+                st.session_state.api_awake = True
+                status.update(
+                    label="✅ Servidor Online!", state="complete", expanded=False
+                )
+                time.sleep(2.5)
+                placeholder.empty()
+            else:
+                st.warning(
+                    "😴 A API está em modo de espera. Isso pode levar até 30 segundos."
+                )
+                time.sleep(5)
+                st.rerun()
 
 # ==================== INTERFACE STREAMLIT ====================
 
