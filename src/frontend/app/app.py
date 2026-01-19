@@ -210,7 +210,7 @@ if st.button("✅ Confirmar Voto", width="stretch"):
 
         if erros_tecnicos:
             st.error(
-                "❌ Ops! Tivemos um problema técnico ao registrar alguns de seus votos. Por favor, tente novamente mais tarde."
+                "❌ Ops! Tivemos um problema técnico ao registrar alguns de seus votos. Por favor, tente novamente."
             )
             for erro in erros_tecnicos:
                 print(f"Log de Erro: {erro}")
