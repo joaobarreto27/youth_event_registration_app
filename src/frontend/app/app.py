@@ -145,7 +145,10 @@ if st.button("🚀 Criar Ideia de Evento e Votar", width="stretch"):
 
         if not sucesso_criacao:
             st.error(
-                f"❌ {nome_criador}, a ideia **{nome_novo_evento}** já foi criada por outro jovem. Vote nela na seção de votação abaixo!"
+                f"❌ {nome_criador}, a ideia **{nome_novo_evento}** já foi criada por outro jovem. Vote nela na seção de votação abaixo em **🗳️ Votar em Ideias de Eventos**!"
+            )
+            st.info(
+                f"💡 Que tal tentar propor uma ideia diferente de **{nome_novo_evento}**?"
             )
 
         if votos_ad_duplicados:
@@ -165,7 +168,7 @@ if st.button("🚀 Criar Ideia de Evento e Votar", width="stretch"):
 
         if sucesso_criacao or votos_ad_sucesso:
             st.cache_data.clear()
-            time.sleep(5)
+            time.sleep(10)
             st.rerun()
 
 # -------------------- COLUNA VOTAR -------------------
@@ -221,7 +224,7 @@ if st.button("✅ Confirmar Voto", width="stretch"):
                 f"✅ **{nome_votante}**, novo(s) voto(s) registrado(s) para: **{lista_suc}**!"
             )
             st.cache_data.clear()
-            time.sleep(5.0)
+            time.sleep(10.0)
             st.rerun()
 
         elif votos_duplicados:
