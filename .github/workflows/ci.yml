@@ -17,6 +17,11 @@ jobs:
         with:
           fetch-depth: 0
 
+      - name: Setup git user
+        run: |
+          git config user.name "CI Bot"
+          git config user.email "ci-bot@example.com"
+
       # 2️⃣ Check merge conflicts with main
       - name: Check merge conflicts
         run: |
