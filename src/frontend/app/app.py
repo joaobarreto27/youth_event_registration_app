@@ -7,18 +7,10 @@ import pandas as pd
 st.set_page_config(
     page_title="Registro de Ideia de Eventos", page_icon="🎯", layout="wide"
 )
-API_URL = "https://joaobarreto27-youth-event-registration-app.hf.space/eventos/"
+API_URL = "https://joaobarreto27-youth-event-registration-app.hf.space/eventos"
 
 st.header("🎯 Formulário de Registro de Ideia de Eventos Jovens AduPno")
 st.divider()
-
-# ==================== CONEXÃO COM O BANCO ====================
-conn = st.connection("my_postgres", type="sql")
-
-
-@st.cache_resource
-def get_session():
-    return conn.session
 
 
 # ==================== FUNÇÕES AUXILIARES ====================
