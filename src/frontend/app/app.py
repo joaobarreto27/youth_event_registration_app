@@ -154,7 +154,7 @@ if st.button("🚀 Criar Ideia de Evento e Votar", width="stretch"):
             )
         else:
             st.success(
-                f"✅ {nome_criador}, a ideia **{nome_novo_evento}** foi registrada com sucesso. Obrigado por sua contribuição!"
+                f"✅ {nome_criador}, ideia **{nome_novo_evento}** foi registrada com sucesso. Obrigado por sua contribuição!"
             )
 
         if votos_ad_duplicados:
@@ -222,7 +222,7 @@ if st.button("✅ Confirmar Voto", width="stretch"):
         if votos_com_sucesso:
             lista_suc = ", ".join(votos_com_sucesso)
             st.success(
-                f"✅ **{nome_votante}**, voto(s) registrado(s) para: **{lista_suc}**!"
+                f"✅ **{nome_votante}**, voto(s) registrado(s) com sucesso para: **{lista_suc}**. Obrigado por sua contribuição!"
             )
             st.cache_data.clear()
             time.sleep(10)
