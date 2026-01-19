@@ -7,7 +7,7 @@ import pandas as pd
 st.set_page_config(
     page_title="Registro de Ideia de Eventos", page_icon="🎯", layout="wide"
 )
-API_URL = "https://joaobarreto27-youth-event-registration-app.hf.space/eventos"
+API_URL = "http://localhost:8000/eventos"
 
 st.header("🎯 Formulário de Registro de Ideia de Eventos Jovens AduPno")
 st.divider()
@@ -21,12 +21,11 @@ def listar_eventos_registrados():
         if response.status_code == 200:
             return response.json()
         return []
-    except Exception as e:
-        st.error(f"Erro ao buscar eventos: {e}")
+    except Exception:
         return []
 
 
-@st.cache_data(ttl=5)  # Cache com TTL curto
+@st.cache_data(ttl=5)
 def listar_participantes_unicos():
     try:
         response = requests.get(f"{API_URL}/participants/unique", timeout=30)
@@ -42,6 +41,7 @@ def criar_evento(nome_evento: str, nome_criador: str):
     try:
         payload = {"event_name": nome_evento}
         response = requests.post(f"{API_URL}/", json=payload, timeout=30)
+
         if response.status_code == 200:
             evento = response.json()
             event_id = evento["id_event"]
@@ -56,10 +56,10 @@ def criar_evento(nome_evento: str, nome_criador: str):
                 },
                 timeout=30,
             )
+
             if response_registered.status_code != 200:
                 return False, None
 
-            # Registrar criador como participante
             requests.post(
                 f"{API_URL}/{event_id}/participants",
                 json={"participant_name": nome_criador},
@@ -68,7 +68,6 @@ def criar_evento(nome_evento: str, nome_criador: str):
 
             return True, event_id
         else:
-            st.error(response.json().get("detail", "Erro ao criar sua ideia de evento"))
             return False, None
     except Exception:
         return False, None
@@ -82,21 +81,23 @@ def registrar_participante(event_id: int, nome: str):
             timeout=30,
         )
         if response.status_code == 200:
-            return True
+            return "sucesso"
         elif response.status_code == 409:
-            return False
+            return "duplicado"
         else:
-            st.error(response.json().get("detail", "Erro ao registrar voto"))
-            return False
-    except Exception as e:
-        st.error(f"Erro ao registrar participante: {e}")
-        return False
+            return "erro"
+    except Exception:
+        return "erro"
 
 
 # ==================== INTERFACE STREAMLIT ====================
 
 # Carrega dados para os selects
 eventos = listar_eventos_registrados()
+# Garante que eventos seja uma lista antes de iterar
+if not isinstance(eventos, list):
+    eventos = []
+
 eventos_map = {e["event_name"]: e["id_event"] for e in eventos}
 
 # -------------------- COLUNA - CRIAR --------------------
@@ -110,7 +111,7 @@ nome_novo_evento = st.text_input(
     "🎯 Qual sua Ideia? (Mande uma por vez)",
     placeholder="ex: Boliche...",
     key="novo_evento_nome",
-    help="Para manter a votação organizada, envie uma ideia de cada vez. Você pode enviar quantas quiser!",
+    help="Para manter a votação organizada, envie uma ideia de cada vez.",
 )
 
 outros_eventos = st.multiselect(
@@ -150,16 +151,15 @@ if st.button("🚀 Criar Ideia de Evento e Votar", width="stretch"):
             st.info(
                 f"💡 {nome_criador} Que tal tentar propor uma ideia diferente de **{nome_novo_evento}**?"
             )
+        else:
+            st.success(
+                f"✅ {nome_criador}, a ideia **{nome_novo_evento}** foi registrada com sucesso. Obrigado por sua contribuição!"
+            )
 
         if votos_ad_duplicados:
             lista_dup = ", ".join(votos_ad_duplicados)
             st.warning(
                 f"⚠️ {nome_criador}, você já tinha votado em: **{lista_dup}**. Esses votos não foram repetidos."
-            )
-
-        if sucesso_criacao:
-            st.success(
-                f"✅ {nome_criador}, a ideia **{nome_novo_evento}** foi registrada com sucesso. Obrigado por sua contribuição!"
             )
 
         if votos_ad_sucesso:
@@ -221,10 +221,10 @@ if st.button("✅ Confirmar Voto", width="stretch"):
         if votos_com_sucesso:
             lista_suc = ", ".join(votos_com_sucesso)
             st.success(
-                f"✅ **{nome_votante}**, novo(s) voto(s) registrado(s) para: **{lista_suc}**!"
+                f"✅ **{nome_votante}**, voto(s) registrado(s) para: **{lista_suc}**!"
             )
             st.cache_data.clear()
-            time.sleep(10.0)
+            time.sleep(10)
             st.rerun()
 
         elif votos_duplicados:
@@ -239,12 +239,15 @@ participantes = listar_participantes_unicos()
 
 if participantes:
     df = pd.DataFrame(participantes)
-    df["participant_name"] = df["participant_name"].str.title()
-    st.metric("Total de Jovens", len(df))
-    st.dataframe(
-        df.rename(columns={"participant_name": "Nome"}),
-        width="stretch",
-        hide_index=True,
-    )
+    if "participant_name" in df.columns:
+        df["participant_name"] = df["participant_name"].str.title()
+        st.metric("Total de Jovens", len(df))
+        st.dataframe(
+            df.rename(columns={"participant_name": "Nome"}),
+            width="stretch",
+            hide_index=True,
+        )
+    else:
+        st.error("Erro no formato dos dados de participantes.")
 else:
     st.warning("⚠️ Aguardando primeira contribuição...")
