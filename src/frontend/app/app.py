@@ -108,8 +108,8 @@ nome_criador = st.text_input(
     "👤 Seu Nome", placeholder="Digite seu nome completo", key="criador_nome"
 )
 nome_novo_evento = st.text_input(
-    "🎯 Nome da Ideia (Digite uma ideia por vez)",
-    placeholder="ex: Boliche, Karaoke...",
+    "🎯 Qual sua Ideia? (Mande uma por vez)",
+    placeholder="ex: Boliche...",
     key="novo_evento_nome",
     help="Para manter a votação organizada, envie uma ideia de cada vez. Você pode enviar quantas quiser!",
 )
