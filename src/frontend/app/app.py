@@ -108,15 +108,16 @@ nome_criador = st.text_input(
     "👤 Seu Nome", placeholder="Digite seu nome completo", key="criador_nome"
 )
 nome_novo_evento = st.text_input(
-    "🎯 Nome da Ideia",
+    "🎯 Nome da Ideia (Digite uma ideia por vez)",
     placeholder="ex: Boliche, Karaoke...",
     key="novo_evento_nome",
+    help="Para manter a votação organizada, envie uma ideia de cada vez. Você pode enviar quantas quiser!",
 )
 
 outros_eventos = st.multiselect(
-    "🎉 Votar em outras ideias de eventos também (opcional)",
+    "🎉 Aproveite para votar em outras ideias já sugeridas! (opcional)",
     options=list(eventos_map.keys()),
-    placeholder="Selecione uma ou mais ideias de eventos",
+    placeholder="Clique aqui e escolha quantas quiser",
     key="outros_eventos_voto",
 )
 
@@ -145,10 +146,10 @@ if st.button("🚀 Criar Ideia de Evento e Votar", width="stretch"):
 
         if not sucesso_criacao:
             st.error(
-                f"❌ {nome_criador}, a ideia **{nome_novo_evento}** já foi criada por outro jovem. Vote nela na seção de votação abaixo em **🗳️ Votar em Ideias de Eventos**!"
+                f"❌ {nome_criador}, a ideia **{nome_novo_evento}** já foi criada por outro jovem. Utilize a seção logo abaixo: **🗳️ Votar em Ideias de Eventos**!"
             )
             st.info(
-                f"💡 Que tal tentar propor uma ideia diferente de **{nome_novo_evento}**?"
+                f"💡 {nome_criador} Que tal tentar propor uma ideia diferente de **{nome_novo_evento}**?"
             )
 
         if votos_ad_duplicados:
@@ -182,7 +183,7 @@ nome_votante = st.text_input(
 eventos_selecionados = st.multiselect(
     "🎉 Selecione as ideias",
     options=list(eventos_map.keys()),
-    placeholder="Escolha uma ou mais ideias",
+    placeholder="Clique aqui e escolha quantas quiser",
     key="eventos_selecionados",
 )
 
@@ -229,7 +230,7 @@ if st.button("✅ Confirmar Voto", width="stretch"):
 
         elif votos_duplicados:
             st.info(
-                f"💡 {nome_votante} como você já votou nessas ideias, que tal propor uma nova acima em **➕ Criar Nova Ideia de Evento**?"
+                f"💡 {nome_votante} como você já votou nessas ideias, que tal propor uma nova na sessão logo acima: **➕ Criar Nova Ideia de Evento**?"
             )
 
 # -------------------- TABELA DE PARTICIPANTES --------------------
