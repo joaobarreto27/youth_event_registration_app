@@ -24,8 +24,8 @@ RUN pip install --no-cache-dir --upgrade pip \
 EXPOSE 7860
 
 # Copia o restante da aplicação
-COPY ./src /code/src
+COPY ./src ./src
 
-ENV PYTHONPATH="${PYTHONPATH}:/code/src/backend"
+ENV PYTHONPATH=/app
 
 CMD ["uvicorn", "src.backend.app.main:app", "--host", "0.0.0.0", "--port", "7860"]
