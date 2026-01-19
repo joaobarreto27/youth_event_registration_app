@@ -21,8 +21,9 @@ def listar_eventos_registrados():
         if response.status_code == 200:
             return response.json()
         return []
-    except Exception:
-        return []
+    except requests.exceptions.ConnectionError:
+        st.error("📡 Erro de conexão: O servidor está demorando para responder.")
+        return None
 
 
 @st.cache_data(ttl=5)
@@ -88,6 +89,35 @@ def registrar_participante(event_id: int, nome: str):
     except Exception:
         return "erro"
 
+
+def check_api_health():
+    """Tenta acordar a API se estiver dormindo."""
+    try:
+        response = requests.get(API_URL.replace("/eventos", "/"), timeout=5)  # noqa: F841
+        return True
+    except (requests.exceptions.ConnectTimeout, requests.exceptions.ConnectionError):
+        return False
+    except Exception:
+        return False
+
+
+# ==================== VERIFICAÇÃO DE SAÚDE DA API ====================
+if "api_awake" not in st.session_state:
+    st.session_state.api_awake = False
+
+if not st.session_state.api_awake:
+    with st.status(
+        "🚀 Acordando o servidor... Por favor, aguarde.", expanded=True
+    ) as status:
+        if check_api_health():
+            st.session_state.api_awake = True
+            status.update(label="✅ Servidor Online!", state="complete", expanded=False)
+        else:
+            st.warning(
+                "😴 A API está em modo de espera. Isso pode levar até 30 segundos para carregar."
+            )
+            time.sleep(5)  # Espera um pouco antes de tentar de novo
+            st.rerun()
 
 # ==================== INTERFACE STREAMLIT ====================
 
