@@ -115,13 +115,13 @@ if not st.session_state.api_awake:
                 status.update(
                     label="✅ Servidor Online!", state="complete", expanded=False
                 )
-                time.sleep(2.5)
+                time.sleep(0.5)
                 placeholder.empty()
             else:
                 st.warning(
                     "😴 A API está em modo de espera. Isso pode levar até 30 segundos."
                 )
-                time.sleep(5)
+                time.sleep(2)
                 st.rerun()
 
 # ==================== INTERFACE STREAMLIT ====================
