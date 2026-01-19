@@ -7,7 +7,7 @@ import pandas as pd
 st.set_page_config(
     page_title="Registro de Ideia de Eventos", page_icon="🎯", layout="wide"
 )
-API_URL = st.secrets.get("API_BASE_URL", "http://localhost:8000") + "/eventos"
+API_URL = st.secrets.get("api_base_url", "http://localhost:8000") + "/eventos"
 
 st.header("🎯 Formulário de Registro de Ideia de Eventos Jovens AduPno")
 st.divider()
