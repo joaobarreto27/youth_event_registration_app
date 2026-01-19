@@ -145,8 +145,8 @@ with col1:
                 st.toast("Voto(s) registrado(s) com sucesso!", icon="✅")
                 listar_eventos_registrados.clear()
                 listar_participantes_unicos.clear()
-                time.sleep(0.5)  # Pequeno delay para permitir que o backend processe
-                st.rerun()  # Força atualização imediata após ação
+                time.sleep(10)
+                st.rerun()
 
 # -------------------- COLUNA 2 — CRIAR EVENTO E VOTAR --------------------
 with col2:
@@ -206,8 +206,8 @@ with col2:
                 st.toast("Ideia de evento criado e votos registrados!", icon="🎉")
                 listar_eventos_registrados.clear()
                 listar_participantes_unicos.clear()
-                time.sleep(0.5)  # Pequeno delay
-                st.rerun()  # Força atualização imediata após ação
+                time.sleep(10)
+                st.rerun()
             else:
                 st.error(
                     f"❌ {nome_criador} ocorreu um erro ao criar sua ideia **{nome_novo_evento}**, pois esta ideia já foi criada por outro jovem, vote nesta ideia **{nome_novo_evento}** na sessão ao lado **(🗳️ Votar em Ideias de Eventos)**."

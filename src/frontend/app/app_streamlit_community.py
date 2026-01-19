@@ -1,103 +1,103 @@
 import time
+from sqlalchemy.exc import IntegrityError
+from sqlalchemy import text
 import streamlit as st
-import requests
 import pandas as pd
 
 # ==================== CONFIGURAÇÃO DA PÁGINA ====================
 st.set_page_config(
     page_title="Registro de Ideia de Eventos", page_icon="🎯", layout="wide"
 )
-API_URL = "https://joaobarreto27-youth-event-registration-app.hf.space/eventos"
 
 st.header("🎯 Formulário de Registro de Ideia de Eventos Jovens AduPno")
 st.divider()
 
+# ==================== CONEXÃO COM O BANCO ====================
+conn = st.connection("my_postgres", type="sql")
+
+
+@st.cache_resource
+def get_session():
+    return conn.session
+
 
 # ==================== FUNÇÕES AUXILIARES ====================
-@st.cache_data(ttl=5)
+@st.cache_data(ttl=10)
 def listar_eventos_registrados():
-    try:
-        response = requests.get(f"{API_URL}/registered/", timeout=30)
-        if response.status_code == 200:
-            return response.json()
-        return []
-    except Exception:
-        return []
+    query = "SELECT id_event, event_name FROM registered_events ORDER BY event_name"
+    return conn.query(query).to_dict(orient="records")
 
 
-@st.cache_data(ttl=5)
+@st.cache_data(ttl=10)
 def listar_participantes_unicos():
-    try:
-        response = requests.get(f"{API_URL}/participants/unique", timeout=30)
-        if response.status_code == 200:
-            return response.json()
-        return []
-    except Exception as e:
-        st.error(f"Erro ao buscar participantes únicos: {e}")
-        return []
+    query = "SELECT DISTINCT participant_name FROM event_participants ORDER BY participant_name"
+    return conn.query(query).to_dict(orient="records")
 
 
 def criar_evento(nome_evento: str, nome_criador: str):
+    session = get_session()
+    nome_evento = nome_evento.strip()
+    nome_criador = nome_criador.strip()
+
     try:
-        payload = {"event_name": nome_evento}
-        response = requests.post(f"{API_URL}/", json=payload, timeout=30)
+        # 1. Tenta inserir na tabela mestra de eventos
+        result = session.execute(
+            text("INSERT INTO events (event_name) VALUES (:nome) RETURNING id_event"),
+            {"nome": nome_evento},
+        )
+        id_event = result.fetchone()[0]  # pyright: ignore[reportOptionalSubscript]
 
-        if response.status_code == 200:
-            evento = response.json()
-            event_id = evento["id_event"]
+        # 2. Registra na registered_events (Note: usei created_date conforme seu último código)
+        session.execute(
+            text("""
+                INSERT INTO registered_events (id_event, event_name, created_by, created_date)
+                VALUES (:id_event, :nome, :criador, CURRENT_TIMESTAMP)
+            """),
+            {"id_event": id_event, "nome": nome_evento, "criador": nome_criador},
+        )
 
-            # Registrar na tabela registered_events
-            response_registered = requests.post(
-                f"{API_URL}/registered/",
-                params={
-                    "event_id": event_id,
-                    "event_name": nome_evento,
-                    "created_by": nome_criador,
-                },
-                timeout=30,
-            )
+        # 3. Registra criador como primeiro participante (voto automático)
+        session.execute(
+            text("""
+                INSERT INTO event_participants (id_event, participant_name)
+                VALUES (:id_event, :nome)
+            """),
+            {"id_event": id_event, "nome": nome_criador},
+        )
 
-            if response_registered.status_code != 200:
-                return False, None
-
-            requests.post(
-                f"{API_URL}/{event_id}/participants",
-                json={"participant_name": nome_criador},
-                timeout=30,
-            )
-
-            return True, event_id
-        else:
-            return False, None
+        session.commit()
+        return True, id_event
+    except IntegrityError:
+        session.rollback()
+        return False, None
     except Exception:
+        session.rollback()
         return False, None
 
 
-def registrar_participante(event_id: int, nome: str):
+def registrar_participante(id_event: int, nome: str):
+    session = get_session()
     try:
-        response = requests.post(
-            f"{API_URL}/{event_id}/participants",
-            json={"participant_name": nome},
-            timeout=30,
+        session.execute(
+            text(
+                "INSERT INTO event_participants (id_event, participant_name) VALUES (:id_event, :nome)"
+            ),
+            {"id_event": id_event, "nome": nome.strip()},
         )
-        if response.status_code == 200:
-            return "sucesso"
-        elif response.status_code == 409:
-            return "duplicado"
-        else:
-            return "erro"
-    except Exception:
-        return "erro"
+        session.commit()
+        return "sucesso"
+    except IntegrityError:
+        session.rollback()
+        return "duplicado"
+    except Exception as e:
+        session.rollback()
+        return f"erro: {e}"
 
 
 # ==================== INTERFACE STREAMLIT ====================
 
 # Carrega dados para os selects
 eventos = listar_eventos_registrados()
-# Garante que eventos seja uma lista antes de iterar
-if not isinstance(eventos, list):
-    eventos = []
-
 eventos_map = {e["event_name"]: e["id_event"] for e in eventos}
 
 # -------------------- COLUNA - CRIAR --------------------
@@ -111,7 +111,7 @@ nome_novo_evento = st.text_input(
     "🎯 Qual sua Ideia? (Mande uma por vez)",
     placeholder="ex: Boliche...",
     key="novo_evento_nome",
-    help="Para manter a votação organizada, envie uma ideia de cada vez.",
+    help="Para manter a votação organizada, envie uma ideia de cada vez. Você pode enviar quantas quiser!",
 )
 
 outros_eventos = st.multiselect(
@@ -151,15 +151,16 @@ if st.button("🚀 Criar Ideia de Evento e Votar", width="stretch"):
             st.info(
                 f"💡 {nome_criador} Que tal tentar propor uma ideia diferente de **{nome_novo_evento}**?"
             )
-        else:
-            st.success(
-                f"✅ {nome_criador}, a ideia **{nome_novo_evento}** foi registrada com sucesso. Obrigado por sua contribuição!"
-            )
 
         if votos_ad_duplicados:
             lista_dup = ", ".join(votos_ad_duplicados)
             st.warning(
                 f"⚠️ {nome_criador}, você já tinha votado em: **{lista_dup}**. Esses votos não foram repetidos."
+            )
+
+        if sucesso_criacao:
+            st.success(
+                f"✅ {nome_criador}, a ideia **{nome_novo_evento}** foi registrada com sucesso. Obrigado por sua contribuição!"
             )
 
         if votos_ad_sucesso:
@@ -221,10 +222,10 @@ if st.button("✅ Confirmar Voto", width="stretch"):
         if votos_com_sucesso:
             lista_suc = ", ".join(votos_com_sucesso)
             st.success(
-                f"✅ **{nome_votante}**, voto(s) registrado(s) para: **{lista_suc}**!"
+                f"✅ **{nome_votante}**, novo(s) voto(s) registrado(s) para: **{lista_suc}**!"
             )
             st.cache_data.clear()
-            time.sleep(10)
+            time.sleep(10.0)
             st.rerun()
 
         elif votos_duplicados:
@@ -239,15 +240,12 @@ participantes = listar_participantes_unicos()
 
 if participantes:
     df = pd.DataFrame(participantes)
-    if "participant_name" in df.columns:
-        df["participant_name"] = df["participant_name"].str.title()
-        st.metric("Total de Jovens", len(df))
-        st.dataframe(
-            df.rename(columns={"participant_name": "Nome"}),
-            width="stretch",
-            hide_index=True,
-        )
-    else:
-        st.error("Erro no formato dos dados de participantes.")
+    df["participant_name"] = df["participant_name"].str.title()
+    st.metric("Total de Jovens", len(df))
+    st.dataframe(
+        df.rename(columns={"participant_name": "Nome"}),
+        width="stretch",
+        hide_index=True,
+    )
 else:
     st.warning("⚠️ Aguardando primeira contribuição...")
