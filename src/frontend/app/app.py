@@ -264,7 +264,7 @@ if st.button("✅ Confirmar Voto", width="stretch"):
 
         elif votos_duplicados:
             st.info(
-                "💡 Como você já votou nessas ideias, que tal propor uma nova na sessão logo acima: **➕ Criar Nova Ideia de Evento**?"
+                "💡 Como você já votou nessas ideias, que tal propor uma nova na seção logo acima: **➕ Criar Nova Ideia de Evento**?"
             )
 
 # -------------------- TABELA DE PARTICIPANTES --------------------
