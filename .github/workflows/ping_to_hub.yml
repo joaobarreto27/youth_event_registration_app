@@ -14,7 +14,7 @@ jobs:
           URL_APP: ${{ github.ref == 'refs/heads/main' && 'https://prd-ideias-eventos-jovens-adupno.streamlit.app/' || 'https://dev-ideias-eventos-jovens-adupno.streamlit.app/'}}
           URL_API: ${{ github.ref == 'refs/heads/main' && 'https://joaobarreto27-prd-youth-event-registration-app.hf.space/docs/' || 'https://joaobarreto27-dev-youth-event-registration-app.hf.space/docs/'}}
         run: |
-          status_code_app=$(curl --write-out "%{http_code}" --silent --output /dev/null "$URL_APP")
+          status_code_app=$(curl --connect-timeout 10 --max-time 15 --write-out "%{http_code}" --silent --output /dev/null "$URL_APP")
 
           if [ "${status_code_app:-0}" -ge 200 ] && [ "${status_code_app:-0}" -lt 500 ]; then
             echo "App está online (Status $status_code_app)"
@@ -23,7 +23,7 @@ jobs:
             exit 1
           fi
 
-          status_code_api=$(curl -X GET --write-out "%{http_code}" --silent --output /dev/null "$URL_API")
+          status_code_api=$(curl -X GET --connect-timeout 10 --max-time 15 --write-out "%{http_code}" --silent --output /dev/null "$URL_API")
 
           if [ "${status_code_api:-0}" -ge 200 ] && [ "${status_code_api:-0}" -lt 500 ]; then
             echo "Api está online (Status $status_code_api)"
