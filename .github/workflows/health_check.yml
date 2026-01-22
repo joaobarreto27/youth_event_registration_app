@@ -5,7 +5,6 @@ on:
     branches: [main, dev]
   pull_request:
     branches: [main, dev]
-
   schedule:
     - cron: '0 */9 * * *'
   workflow_dispatch:
@@ -13,13 +12,10 @@ on:
 jobs:
   ping-check:
     runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        environment: [main, dev]
     steps:
       - name: Configure Environment URLs
         run: |
-          if [ ${{ matrix.environment }}] == "main" ]; then
+          if [ "${{ github.ref_name }}" == "main" ]; then
             echo "URL_APP=https://prd-ideias-eventos-jovens-adupno.streamlit.app/" >> $GITHUB_ENV
             echo "URL_API=https://joaobarreto27-prd-youth-event-registration-app.hf.space/docs#/" >> $GITHUB_ENV
           else
@@ -27,22 +23,21 @@ jobs:
             echo "URL_API=https://joaobarreto27-dev-youth-event-registration-app.hf.space/docs#/" >> $GITHUB_ENV
       - name: Ping the App and API
         run: |
-          echo "Testando ambiente: ${{ matrix.environment }}"
+          echo "Testando ambiente: $ENV_NAME na branch ${{ github.ref_name }}"
 
+          # Ping no App
           status_code_app=$(curl --connect-timeout 10 --max-time 15 --write-out "%{http_code}" --silent --output /dev/null "$URL_APP")
-
           if [ "${status_code_app:-0}" -ge 200 ] && [ "${status_code_app:-0}" -lt 500 ]; then
-            echo "✅ App (${{ matrix.environment }}) online: (Status $status_code_app)"
+            echo "✅ App ($ENV_NAME) online: (Status $status_code_app)"
           else
-            echo "❌ Erro: App (${{ matrix.environment }}) retornou: $status_code_app"
+            echo "❌ Erro: App ($ENV_NAME) retornou: $status_code_app"
             exit 1
           fi
 
           status_code_api=$(curl -X GET --connect-timeout 10 --max-time 15 --write-out "%{http_code}" --silent --output /dev/null "$URL_API")
-
           if [ "${status_code_api:-0}" -ge 200 ] && [ "${status_code_api:-0}" -lt 500 ]; then
-            echo "✅ App (${{ matrix.environment }}) online: (Status $status_code_api)"
+            echo "✅ API ($ENV_NAME) online: (Status $status_code_api)"
           else
-            echo "❌ Erro: App (${{ matrix.environment }}) retornou: $status_code_api"
+            echo "❌ Erro: API ($ENV_NAME) retornou: $status_code_api"
             exit 1
           fi
