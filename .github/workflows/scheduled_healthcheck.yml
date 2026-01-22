@@ -50,7 +50,6 @@ jobs:
           MESSAGE+="📦 *Repo:* ${{ github.repository }}"$'\n'
           MESSAGE+="🌐 *Ambiente:* ${{ matrix.environment }}"$'\n'
           MESSAGE+="🔗 *Url App:* $URL_APP"$'\n'
-          MESSAGE+="🔗 *Url Api:* $URL_API"$'\n'
           MESSAGE+="🛠️ [Ver Logs aqui](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }})"
 
           curl -s -X POST "https://api.telegram.org/bot${{ secrets.TELEGRAM_TOKEN }}/sendMessage" \
