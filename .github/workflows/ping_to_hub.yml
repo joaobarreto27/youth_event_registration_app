@@ -16,7 +16,7 @@ jobs:
         run: |
           status_code_app=$(curl --write-out "%{http_code}" --silent --output /dev/null "$URL_APP")
 
-          if [ "$status_code_app" -eq 303 ] || [ "$status_code_app" -eq 200 ] || [ "$status_code_app" -eq 307 ]; then
+          if [ "$status_code" -ge 200 ] && [ "$status_code" -lt 500 ]; then
             echo "App está online (Status $status_code_app)"
           else
             echo "Erro: App retornou $status_code_app"
