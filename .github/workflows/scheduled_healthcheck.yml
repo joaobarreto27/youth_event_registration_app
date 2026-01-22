@@ -49,7 +49,7 @@ jobs:
           MESSAGE="🚨 *Falha no Healthcheck*"$'\n\n'
           MESSAGE+="📦 *Repo:* ${{ github.repository }}"$'\n'
           MESSAGE+="🌐 *Ambiente:* ${{ matrix.environment }}"$'\n'
-          MESSAGE+="🔗 *Url App:* $URL_APP"$'\n'
+          MESSAGE+="🔗 *Url App:* $URL_APP"$"
 
           curl -s -X POST "https://api.telegram.org/bot${{ secrets.TELEGRAM_TOKEN }}/sendMessage" \
                --data-urlencode "chat_id=${{ secrets.TELEGRAM_CHAT_ID }}" \
