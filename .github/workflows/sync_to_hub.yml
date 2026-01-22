@@ -17,10 +17,10 @@ jobs:
         run: |
           if [ "${{ github.ref }}" == "refs/heads/main" ]; then
             echo "SPACE_NAME=${{ secrets.URL_API_PRD }}" >>$GITHUB_ENV
-            echo "HF_TOKEN=${{ secrets.ACCESS_TOKEN_HUGGING_PRD }}"
+            echo "HF_TOKEN=${{ secrets.ACCESS_TOKEN_HUGGING_PRD }}" >>$GITHUB_ENV
           else
             echo "SPACE_NAME=${{ secrets.URL_API_DEV }}" >>$GITHUB_ENV
-            echo "HF_TOKEN=${{ secrets.ACCESS_TOKEN_HUGGING_DEV }}"
+            echo "HF_TOKEN=${{ secrets.ACCESS_TOKEN_HUGGING_DEV }}" >>$GITHUB_ENV
           fi
       - name: Push to Hub
         run: |
