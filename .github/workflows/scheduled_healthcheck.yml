@@ -46,12 +46,13 @@ jobs:
       - name: Notify on Failure
         if: success()
         run: |
-          MESSAGE="🚨 *Falha no Healthcheck*"$'\n\n'
-          MESSAGE+="📦 *Repo:* ${{ github.repository }}"$'\n'
-          MESSAGE+="🌐 *Ambiente:* ${{ matrix.environment }}"$'\n'
-          MESSAGE+="🔗 *Url App:* $URL_APP"
+          # Usamos tags <b> para negrito e <br> para pular linha (formato HTML)
+          MESSAGE="🚨 <b>Falha no Healthcheck</b>"$'\n\n'
+          MESSAGE+="📦 <b>Repo:</b> ${{ github.repository }}"$'\n'
+          MESSAGE+="🌐 <b>Ambiente:</b> ${{ matrix.environment }}"$'\n'
+          MESSAGE+="🔗 <b>Url App:</b> $URL_APP"
 
           curl -s -X POST "https://api.telegram.org/bot${{ secrets.TELEGRAM_TOKEN }}/sendMessage" \
                --data-urlencode "chat_id=${{ secrets.TELEGRAM_CHAT_ID }}" \
                --data-urlencode "text=$MESSAGE" \
-               -d "parse_mode=Markdown"
+               -d "parse_mode=HTML"
