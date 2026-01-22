@@ -45,7 +45,7 @@ jobs:
           fi
 
       - name: Notify on Failure
-        if: success()
+        if: failure()
         run: |
           MESSAGE="🚨 *Falha no Healthcheck* %0A%0A"
           MESSAGE+="📦 *Repo:* ${{ github.repository }} %0A"
