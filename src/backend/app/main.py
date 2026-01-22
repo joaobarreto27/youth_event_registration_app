@@ -10,4 +10,11 @@ app = FastAPI(
     description="Sistema de cadastro de eventos e registro de participantes",
     version="1.0.0",
 )
+
+
+@app.get("/")
+async def read_root():
+    return {"status": "online", "message": "API is up and running"}
+
+
 app.include_router(router_events, prefix="/eventos", tags=["eventos"])
