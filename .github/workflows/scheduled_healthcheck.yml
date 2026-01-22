@@ -1,4 +1,4 @@
-name: Healthcheck - Agendado (9h)
+name: Healthcheck Schedule
 
 on:
   schedule:
