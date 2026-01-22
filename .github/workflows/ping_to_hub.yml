@@ -15,6 +15,6 @@ jobs:
           URL_API: ${{ github.ref == 'refs/heads/main' && 'https://joaobarreto27-prd-youth-event-registration-app.hf.space/' || 'https://joaobarreto27-dev-youth-event-registration-app.hf.space/'}}
         run: |
           echo "Pingando o App: $URL_APP"
-          curl -I "$URL_APP"
+          curl -L "$URL_APP"
           echo "Pingando a API: $URL_API"
-          curl -I "$URL_API"
+          curl -X GET "$URL_API"
