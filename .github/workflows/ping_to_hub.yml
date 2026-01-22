@@ -16,7 +16,7 @@ jobs:
         run: |
           status_code_app=$(curl --write-out "%{http_code}" --silent --output /dev/null "$URL_APP")
 
-          if [ "$status_code_app" -ge 200 ] && [ "$status_code_app" -lt 500 ]; then
+          if [ "${status_code_app:-0}" -ge 200 ] && [ "${status_code_app:-0}" -lt 500 ]; then
             echo "App está online (Status $status_code_app)"
           else
             echo "Erro: App retornou $status_code_app"
@@ -25,7 +25,7 @@ jobs:
 
           status_code_api=$(curl -X GET --write-out "%{http_code}" --silent --output /dev/null "$URL_API")
 
-          if [ "$status_code" -ge 200 ] && [ "$status_code" -lt 500 ]; then
+          if [ "${status_code_api:-0}" -ge 200 ] && [ "${status_code_api:-0}" -lt 500 ]; then
             echo "Api está online (Status $status_code_api)"
           else
             echo "Erro: Api retornou $status_code_api"
