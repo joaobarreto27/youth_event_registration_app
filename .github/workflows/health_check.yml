@@ -21,6 +21,7 @@ jobs:
           else
             echo "URL_APP=https://dev-ideias-eventos-jovens-adupno.streamlit.app/" >> $GITHUB_ENV
             echo "URL_API=https://joaobarreto27-dev-youth-event-registration-app.hf.space/docs#/" >> $GITHUB_ENV
+          fi
       - name: Ping the App and API
         run: |
           echo "Testando ambiente: $ENV_NAME na branch ${{ github.ref_name }}"
