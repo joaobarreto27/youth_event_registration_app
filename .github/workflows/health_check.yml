@@ -15,7 +15,7 @@ jobs:
     steps:
       - name: Configure Environment URLs
         run: |
-          if [ "${{ github.ref_name }}" == "main" ]; then
+          if [ ${{ github.ref == 'refs/heads/main' ]; then
             echo "URL_APP=https://prd-ideias-eventos-jovens-adupno.streamlit.app/" >> $GITHUB_ENV
             echo "URL_API=https://joaobarreto27-prd-youth-event-registration-app.hf.space/docs#/" >> $GITHUB_ENV
           else
