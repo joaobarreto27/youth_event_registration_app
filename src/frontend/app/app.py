@@ -161,10 +161,10 @@ if st.button("🚀 Criar Ideia de Evento e Votar", width="stretch"):
 
     elif not nome_novo_evento.strip():
         st.warning(
-            f"💡 {nome_criador} **Você quer apenas votar em ideias existentes?**"
+            f"💡 {nome_criador} **Você quer apenas votar em ideias já sugeridas por outro jovem?**"
         )
         st.info(
-            "Para **apenas votar**, utilize a seção logo abaixo: **🗳️ Votar em Ideias de Eventos**."
+            "Para **apenas votar** em ideias já sugeridas, utilize a seção logo abaixo: **🗳️ Votar em Ideias de Eventos**."
         )
     else:
         sucesso_criacao, id_novo = criar_evento(nome_novo_evento, nome_criador)
@@ -181,7 +181,7 @@ if st.button("🚀 Criar Ideia de Evento e Votar", width="stretch"):
 
         if not sucesso_criacao:
             st.error(
-                f"❌ {nome_criador}, a ideia **{nome_novo_evento}** já foi criada por outro jovem. Para votar nesta ideia utilize a seção logo abaixo: **🗳️ Votar em Ideias de Eventos**!"
+                f"❌ {nome_criador}, a ideia **{nome_novo_evento}** já foi sugerida por outro jovem. Para votar nesta ideia utilize a seção logo abaixo: **🗳️ Votar em Ideias de Eventos**!"
             )
             st.info(
                 f"💡 Que tal tentar propor uma ideia diferente de **{nome_novo_evento}**?"
@@ -209,13 +209,15 @@ if st.button("🚀 Criar Ideia de Evento e Votar", width="stretch"):
 # -------------------- COLUNA VOTAR -------------------
 st.divider()
 st.subheader("🗳️ Votar em Ideias de Eventos")
-st.markdown("Vote nas ideias de eventos que você mais gostaria que tivesse!")
+st.markdown(
+    "Vote nas ideias de eventos já sugeridas por outro jovem, que você mais gostaria que tivesse!"
+)
 nome_votante = st.text_input(
     "👤 Seu nome", placeholder="Digite seu nome completo", key="nome_votante"
 )
 
 eventos_selecionados = st.multiselect(
-    "🎉 Selecione as ideias que deseja votar",
+    "🎉 Selecione as ideias ideias já sugeridas que deseja votar",
     options=list(eventos_map.keys()),
     placeholder="Clique aqui e escolha quantas quiser",
     key="eventos_selecionados",
