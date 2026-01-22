@@ -1,0 +1,45 @@
+name: Healthcheck Schedule
+
+on:
+  schedule:
+    - cron: '0 */9 * * *'
+  workflow_dispatch:
+
+jobs:
+  monitor:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        environment: [main, dev]
+
+    steps:
+      - name: Set URLs for ${{ matrix.environment }}
+        run: |
+          if [ "${{ matrix.environment }}" == "main" ]; then
+            echo "URL_APP=https://prd-ideias-eventos-jovens-adupno.streamlit.app/" >> $GITHUB_ENV
+            echo "URL_API=https://joaobarreto27-prd-youth-event-registration-app.hf.space/docs#/" >> $GITHUB_ENV
+          else
+            echo "URL_APP=https://dev-ideias-eventos-jovens-adupno.streamlit.app/" >> $GITHUB_ENV
+            echo "URL_API=https://joaobarreto27-dev-youth-event-registration-app.hf.space/docs#/" >> $GITHUB_ENV
+          fi
+
+      - name: Health Check
+        run: |
+          echo "Monitorando: ${{ matrix.environment }}"
+
+          status_app=$(curl --connect-timeout 10 --max-time 15 --write-out "%{http_code}" --silent --output /dev/null "$URL_APP")
+          if [ "${status_app:-0}" -ge 200 ] && [ "${status_app:-0}" -lt 500 ]; then
+            echo "✅ App ${{ matrix.environment }} OK ($status_app)"
+          else
+            echo "❌ App ${{ matrix.environment }} DOWN ($status_app)"
+            exit 1
+          fi
+
+          # Ping API
+          status_api=$(curl -X GET --connect-timeout 10 --max-time 15 --write-out "%{http_code}" --silent --output /dev/null "$URL_API")
+          if [ "${status_api:-0}" -ge 200 ] && [ "${status_api:-0}" -lt 500 ]; then
+            echo "✅ API ${{ matrix.environment }} OK ($status_api)"
+          else
+            echo "❌ API ${{ matrix.environment }} DOWN ($status_api)"
+            exit 1
+          fi
