@@ -29,17 +29,17 @@ jobs:
 
           status_app=$(curl --connect-timeout 10 --max-time 15 --write-out "%{http_code}" --silent --output /dev/null "$URL_APP")
           if [ "${status_app:-0}" -ge 200 ] && [ "${status_app:-0}" -lt 500 ]; then
-            echo "✅ App ${{ matrix.environment }} OK ($status_app)"
+            echo "✅ App ${{ matrix.environment }} online: (Status $status_app)"
           else
-            echo "❌ App ${{ matrix.environment }} DOWN ($status_app)"
+            echo "❌ Erro: App ${{ matrix.environment }} down: (Status $status_app)"
             exit 1
           fi
 
           # Ping API
           status_api=$(curl -X GET --connect-timeout 10 --max-time 15 --write-out "%{http_code}" --silent --output /dev/null "$URL_API")
           if [ "${status_api:-0}" -ge 200 ] && [ "${status_api:-0}" -lt 500 ]; then
-            echo "✅ API ${{ matrix.environment }} OK ($status_api)"
+            echo "✅ API ${{ matrix.environment }} online: ($status_api)"
           else
-            echo "❌ API ${{ matrix.environment }} DOWN ($status_api)"
+            echo "❌ Erro: API ${{ matrix.environment }} down: ($status_api)"
             exit 1
           fi
