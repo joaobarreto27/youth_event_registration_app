@@ -12,7 +12,7 @@ jobs:
       - name: Send request to Hub
         env:
           URL_APP: ${{ github.ref == 'refs/heads/main' && 'https://prd-ideias-eventos-jovens-adupno.streamlit.app/' || 'https://dev-ideias-eventos-jovens-adupno.streamlit.app/'}}
-          URL_API: ${{ github.ref == 'refs/heads/main' && 'https://joaobarreto27-prd-youth-event-registration-app.hf.space/docs/' || 'https://joaobarreto27-dev-youth-event-registration-app.hf.space/docs/'}}
+          URL_API: ${{ github.ref == 'refs/heads/main' && 'https://joaobarreto27-prd-youth-event-registration-app.hf.space/docs#/' || 'https://joaobarreto27-dev-youth-event-registration-app.hf.space/docs#/'}}
         run: |
           status_code_app=$(curl --connect-timeout 10 --max-time 15 --write-out "%{http_code}" --silent --output /dev/null "$URL_APP")
 
