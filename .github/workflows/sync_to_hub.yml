@@ -13,10 +13,16 @@ jobs:
           fetch-depth: 0
           lfs: true
 
+      - name: Configure Environment Secret
+        run: |
+          if [ "${{ github.ref }}" == "refs/heads/main" ]; then
+            echo "SPACE_NAME=${{ secrets.SPACE_NAME_API_PRD }}" >>$GITHUB_ENV
+            echo "HF_TOKEN=${{ secrets.ACCESS_TOKEN_HUGGING_PRD }}" >>$GITHUB_ENV
+          else
+            echo "SPACE_NAME=${{ secrets.SPACE_NAME_API_DEV }}" >>$GITHUB_ENV
+            echo "HF_TOKEN=${{ secrets.ACCESS_TOKEN_HUGGING_DEV }}" >>$GITHUB_ENV
+          fi
       - name: Push to Hub
-        env:
-          HF_TOKEN: ${{ github.ref == 'refs/heads/main' && secrets.ACCESS_TOKEN_HUGGING_PRD || secrets.ACCESS_TOKEN_HUGGING_DEV }}
-          SPACE_NAME: ${{ github.ref == 'refs/heads/main' && 'joaobarreto27/prd_youth_event_registration_app' || 'joaobarreto27/dev_youth_event_registration_app' }}
         run: |
           git config --global user.email "github-actions[bot]@users.noreply.github.com"
           git config --global user.name "github-actions[bot]"
