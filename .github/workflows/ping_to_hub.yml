@@ -14,7 +14,13 @@ jobs:
           URL_APP: ${{ github.ref == 'refs/heads/main' && 'https://prd-ideias-eventos-jovens-adupno.streamlit.app/' || 'https://dev-ideias-eventos-jovens-adupno.streamlit.app/'}}
           URL_API: ${{ github.ref == 'refs/heads/main' && 'https://joaobarreto27-prd-youth-event-registration-app.hf.space/' || 'https://joaobarreto27-dev-youth-event-registration-app.hf.space/'}}
         run: |
-          echo "Pingando o App: $URL_APP"
-          curl -L "$URL_APP"
+          status_code=$(curl --write-out "%{http_code}" --silent --output /dev/null "$URL_APP")
+          if [ "$status_code" -eq 303 ] || [ "$status_code" -eq 200 ]; then
+            echo "App está online (Status $status_code)"
+          else
+            echo "Erro: App retornou $status_code"
+            exit 1
+          fi
+
           echo "Pingando a API: $URL_API"
           curl -X GET "$URL_API"
