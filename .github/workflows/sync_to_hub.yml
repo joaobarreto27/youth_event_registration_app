@@ -16,7 +16,7 @@ jobs:
       - name: Push to Hub
         env:
           HF_TOKEN: ${{ github.ref == 'refs/heads/main' && secrets.ACCESS_TOKEN_HUGGING_PRD || secrets.ACCESS_TOKEN_HUGGING_DEV }}
-          SPACE_NAME: ${{ github.ref == 'refs/heads/main' && 'joaobarreto27/prd_youth_event_registration_app' || 'joaobarreto27/dev_youth_event_registration_app' }}
+          SPACE_NAME: ${{ github.ref == 'refs/heads/main' && secrets.URL_API_PRD || secrets.URL_API_DEV }}
         run: |
           git config --global user.email "github-actions[bot]@users.noreply.github.com"
           git config --global user.name "github-actions[bot]"

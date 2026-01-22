@@ -16,7 +16,7 @@ jobs:
             echo "URL_API=${{ secrets.URL_API_PRD }}" >> $GITHUB_ENV
             echo "ENV_NAME=Produção (main)" >> $GITHUB_ENV
           else
-            echo "URL_API=${{ secrets.URL_API_DEV }}" >> $GITHUB_ENV
+            echo "URL_APP=${{ secrets.URL_APP_DEV }}" >> $GITHUB_ENV
             echo "URL_API=${{ secrets.URL_API_DEV }}" >> $GITHUB_ENV
             echo "ENV_NAME=Desenvolvimento (dev)" >> $GITHUB_ENV
           fi
