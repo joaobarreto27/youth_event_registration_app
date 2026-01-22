@@ -44,9 +44,8 @@ jobs:
           fi
 
       - name: Notify on Failure
-        if: success()
+        if: failure()
         run: |
-          # Usamos tags <b> para negrito e <br> para pular linha (formato HTML)
           MESSAGE="🚨 <b>Falha no Healthcheck</b>"$'\n\n'
           MESSAGE+="📦 <b>Repo:</b> ${{ github.repository }}"$'\n'
           MESSAGE+="🌐 <b>Ambiente:</b> ${{ matrix.environment }}"$'\n'
