@@ -12,15 +12,22 @@ jobs:
       - name: Send request to Hub
         env:
           URL_APP: ${{ github.ref == 'refs/heads/main' && 'https://prd-ideias-eventos-jovens-adupno.streamlit.app/' || 'https://dev-ideias-eventos-jovens-adupno.streamlit.app/'}}
-          URL_API: ${{ github.ref == 'refs/heads/main' && 'https://joaobarreto27-prd-youth-event-registration-app.hf.space/' || 'https://joaobarreto27-dev-youth-event-registration-app.hf.space/'}}
+          URL_API: ${{ github.ref == 'refs/heads/main' && 'https://joaobarreto27-prd-youth-event-registration-app.hf.space/docs/' || 'https://joaobarreto27-dev-youth-event-registration-app.hf.space/docs/'}}
         run: |
-          status_code=$(curl --write-out "%{http_code}" --silent --output /dev/null "$URL_APP")
-          if [ "$status_code" -eq 303 ] || [ "$status_code" -eq 200 ]; then
-            echo "App está online (Status $status_code)"
+          status_code_app=$(curl --write-out "%{http_code}" --silent --output /dev/null "$URL_APP")
+
+          if [ "$status_code_app" -eq 303 ] || [ "$status_code_app" -eq 200 ]; then
+            echo "App está online (Status $status_code_app)"
           else
-            echo "Erro: App retornou $status_code"
+            echo "Erro: App retornou $status_code_app"
             exit 1
           fi
 
-          echo "Pingando a API: $URL_API"
-          curl -X GET "$URL_API"
+          status_code_api=$(curl -X GET --write-out "%{http_code}" --silent --output /dev/null "$URL_API")
+
+          if [ "$status_code_api" -eq 303 ] || [ "$status_code_api" -eq 200 ] || [ "$status_code_api" -eq 405 ]; then
+            echo "Api está online (Status $status_code_api)"
+          else
+            echo "Erro: Api retornou $status_code_api"
+            exit 1
+          fi
