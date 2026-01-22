@@ -3,10 +3,6 @@ name: Healthcheck Multi-Ambiente
 on:
   push:
     branches: [main, dev]
-  pull_request:
-    branches: [main, dev]
-  schedule:
-    - cron: '0 */9 * * *'
   workflow_dispatch:
 
 jobs:
